@@ -1,0 +1,6 @@
+progression :
+	no player levels - not needed
+	new spells that do new things - but not neccessarily higher damage
+	encourage players to use new weapons/spells
+	keep everything viable throughout the game
+	enchant weapons/armours to upgrade them with new effects
