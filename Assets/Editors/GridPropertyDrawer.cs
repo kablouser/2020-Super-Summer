@@ -51,6 +51,7 @@ public abstract class GridPropertyDrawer : PropertyDrawer
     protected abstract DrawInstruction[][] GetDrawings { get; }
     protected const float unitWidth = 10f;
 
+    protected static readonly GUIStyle leftAlign = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleLeft };
     protected static readonly GUIStyle middleAlign = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
     protected static readonly GUIStyle rightAlign = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleRight };
 
@@ -71,7 +72,9 @@ public abstract class GridPropertyDrawer : PropertyDrawer
         float originalX;
         float xPosition = originalX = pos.x;
         float yPosition = pos.y;
-        for (int i = 0; i < getDrawings.Length; i++, xPosition = originalX, yPosition += heightPerLine)
+        for (int i = 0; i < getDrawings.Length; i++,
+            xPosition = originalX,
+            yPosition += heightPerLine + EditorGUIUtility.standardVerticalSpacing)
         {
             int sharedCount = 0;
             float totalConstantWidth = 0;
@@ -99,25 +102,10 @@ public abstract class GridPropertyDrawer : PropertyDrawer
                 Rect rect = new Rect(xPosition, yPosition, width, heightPerLine);
                 if (getDrawings[i][j].display.labelText == null)
                 {
-                    SerializedProperty property = prop.FindPropertyRelative(getDrawings[i][j].display.variableName);
-
-                    if (property.isExpanded)
-                    {
-                        rect.height = heightPerLine * (property.arraySize + 2);
-                        currentExtraLines = Mathf.Max(currentExtraLines, property.arraySize + 1);
-                    }
-
-                    GUIContent displayLabel;
-                    if (property.isArray && property.propertyType != SerializedPropertyType.String)
-                        displayLabel = new GUIContent(property.displayName);
-                    else
-                        displayLabel = GUIContent.none;
-                    
-                    EditorGUI.PropertyField(
+                    DrawPropertyField(
+                        prop.FindPropertyRelative(getDrawings[i][j].display.variableName),
                         rect,
-                        property,
-                        displayLabel,
-                        true);
+                        ref currentExtraLines);
                 }
                 else
                 {
@@ -144,11 +132,71 @@ public abstract class GridPropertyDrawer : PropertyDrawer
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        return base.GetPropertyHeight(property, label) * (GetDrawings.Length + extraLines);
+        int totalLines = GetDrawings.Length + extraLines;
+        int newLines = Mathf.Max(0, totalLines - 1);
+
+        return
+            base.GetPropertyHeight(property, label) * totalLines +
+            EditorGUIUtility.standardVerticalSpacing * newLines;
     }
 
-    private void DrawElement(Rect rect, int index, bool isActive, bool isFocused)
+    private void DrawPropertyField(SerializedProperty property, Rect rect, ref int currentExtraLines)
     {
+        GUIContent displayLabel;
+        bool isArray;
 
+        if (property.isArray && property.propertyType != SerializedPropertyType.String)
+        {
+            displayLabel = new GUIContent(property.displayName);
+            isArray = true;
+        }
+        else
+        {
+            displayLabel = GUIContent.none;
+            isArray = false;
+        }
+
+        EditorGUI.PropertyField(
+            rect,
+            property,
+            displayLabel,
+            false);
+
+        if (isArray && property.isExpanded)
+        {
+            //EditorGUI.indentLevel++;
+            //+1 for array size field
+            currentExtraLines = Mathf.Max(currentExtraLines, property.arraySize + 1);           
+
+            rect.y += rect.height + EditorGUIUtility.standardVerticalSpacing;
+
+            Rect leftRect;
+            Rect rightRect;
+
+            leftRect = rightRect = rect;
+            leftRect.width = rightRect.width = rect.width * 0.5f;// + 8; //<< Why is there 8px missing?!
+
+            rightRect.x = leftRect.xMax;// - 16;
+
+            EditorGUI.LabelField(
+                leftRect,
+                "size",
+                leftAlign);
+
+            EditorGUI.PropertyField(
+                rightRect,
+                property.FindPropertyRelative("Array.size"),
+                GUIContent.none,
+                false);
+
+            int size = property.arraySize;
+            for (int i = 0; i < size; i++)
+            {
+                rect.y += rect.height + EditorGUIUtility.standardVerticalSpacing;
+                DrawPropertyField(property.GetArrayElementAtIndex(i), rect, ref currentExtraLines);                
+            }
+
+            //EditorGUI.indentLevel--;
+        }
     }
 }
