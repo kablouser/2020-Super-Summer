@@ -31,8 +31,14 @@ MonoBehaviour:
       activeEffect:
         name: Ranged Use
         duration: 0.8
-        attributes: []
-        maxResources: []
+        attributes:
+        - attribute: 0
+          value: 0
+        - attribute: 0
+          value: 0
+        maxResources:
+        - resource: 0
+          value: 0
         regenResources: []
       attackTrigger: Left Swing
       spawnTime: 0.3
@@ -50,9 +56,13 @@ MonoBehaviour:
       activeEffect:
         name: Ranged Use
         duration: 0.8
-        attributes: []
+        attributes:
+        - attribute: 0
+          value: 0
         maxResources: []
-        regenResources: []
+        regenResources:
+        - resource: 0
+          value: 0
       attackTrigger: Right Swing
       spawnTime: 0.3
       attackEnd: 1

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "Arms", menuName = "Item/Armament", order = 2)]
 public class Armament : Item
@@ -11,15 +12,27 @@ public class Armament : Item
     public enum HoldMethod { none, leftHand, rightHand, bothHands};
     public enum IdleAnimation { defaultIdle }
 
-    //This wrapper allows the inspector to see the rectangular array
     [System.Serializable]
-    public struct SlotArray { public Slot[] array; }
+    public struct SlotArray
+    {
+        public Slot[] array;
+    }
+
+    //This wrapper allows the inspector to see the rectangular array
+    [System.Serializable]    
+    public struct SlotConfigurations
+    {
+        [HideInInspector]
+        public SlotArray[] configs;
+        [SerializeField]
+        public SimpleArray test;
+    }
 
     [Space]
     [Header("Armament")]
     public ArmamentPrefab armsPrefab;
-    [Tooltip("Cannot be empty")]
-    public SlotArray[] usableConfigs;
+    [Tooltip("Cannot be empty")]    
+    public SlotConfigurations usableConfigs;
 
     /// <summary>
     /// 1. Searches for a config with empty slots containing the attempted slot.
@@ -30,7 +43,7 @@ public class Armament : Item
     {
         usedSlots = null;
 
-        foreach (var config in usableConfigs)
+        foreach (var config in usableConfigs.configs)
         {
             bool allFree = true;
             bool containsAttemptSlot = false;            
@@ -54,7 +67,7 @@ public class Armament : Item
         }
 
         if (usedSlots == null)
-            usedSlots = usableConfigs[0].array;
+            usedSlots = usableConfigs.configs[0].array;
     }
 
     public virtual ArmamentPrefab SpawnPrefab(Equipment equipment, Slot[] usedSlots, Transform[] equipmentTransforms)

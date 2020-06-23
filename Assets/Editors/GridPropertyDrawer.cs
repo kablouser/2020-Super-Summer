@@ -55,148 +55,137 @@ public abstract class GridPropertyDrawer : PropertyDrawer
     protected static readonly GUIStyle middleAlign = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
     protected static readonly GUIStyle rightAlign = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleRight };
 
-    private int extraLines = 0;
+    private float height = 0;
 
-    public override void OnGUI(Rect pos, SerializedProperty prop, GUIContent label)
+    public override void OnGUI(Rect originalPosition, SerializedProperty property, GUIContent label)
     {
-        EditorGUI.BeginProperty(pos, label, prop);
-        pos = EditorGUI.PrefixLabel(pos, GUIUtility.GetControlID(FocusType.Passive), label);
+        EditorGUI.BeginProperty(originalPosition, label, property);
+
+        Rect prefixedPosition = EditorGUI.PrefixLabel(originalPosition, GUIUtility.GetControlID(FocusType.Passive), label);
+        Rect drawBox = prefixedPosition;
+        drawBox.height = EditorGUIUtility.singleLineHeight;
+        float originalX = prefixedPosition.x;
+
         int indent = EditorGUI.indentLevel;
         EditorGUI.indentLevel = 0;
-        extraLines = 0;
+
+        height = 0;
 
         DrawInstruction[][] getDrawings = GetDrawings;
 
-        float heightPerLine = base.GetPropertyHeight(prop, label);
-
-        float originalX;
-        float xPosition = originalX = pos.x;
-        float yPosition = pos.y;
-        for (int i = 0; i < getDrawings.Length; i++,
-            xPosition = originalX,
-            yPosition += heightPerLine + EditorGUIUtility.standardVerticalSpacing)
+        for (int i = 0; i < getDrawings.Length; i++)
         {
-            int sharedCount = 0;
-            float totalConstantWidth = 0;
-            int currentExtraLines = 0;
-            for (int j = 0; j < getDrawings[i].Length; j++)
-                if (getDrawings[i][j].size.sharedWidth)
-                    sharedCount++;
-                else
-                    totalConstantWidth += getDrawings[i][j].size.constantWidth;
-
             float remainingSplit;
-            if (0 < sharedCount)
-                remainingSplit = (pos.width - totalConstantWidth) / sharedCount;
-            else
-                remainingSplit = 0;
+            {
+                int sharedCount = 0;
+                float totalConstantWidth = 0;
+                                
+                for (int j = 0; j < getDrawings[i].Length; j++)
+                    if (getDrawings[i][j].size.sharedWidth)
+                        sharedCount++;
+                    else
+                        totalConstantWidth += getDrawings[i][j].size.constantWidth;
+
+                if (0 < sharedCount)
+                    remainingSplit = (
+                        prefixedPosition.width
+                        - totalConstantWidth
+                        - (getDrawings[i].Length - 1) * EditorGUIUtility.standardVerticalSpacing)
+                    / sharedCount;
+                else
+                    remainingSplit = 0;
+            }
+
+            float rowHeight = 0;
 
             for (int j = 0; j < getDrawings[i].Length; j++)
             {
-                float width;
                 if (getDrawings[i][j].size.sharedWidth)
-                    width = remainingSplit;
+                    drawBox.width = remainingSplit;
                 else
-                    width = getDrawings[i][j].size.constantWidth;
+                    drawBox.width = getDrawings[i][j].size.constantWidth;
 
-                Rect rect = new Rect(xPosition, yPosition, width, heightPerLine);
                 if (getDrawings[i][j].display.labelText == null)
                 {
+                    Rect copy = drawBox;
+
                     DrawPropertyField(
-                        prop.FindPropertyRelative(getDrawings[i][j].display.variableName),
-                        rect,
-                        ref currentExtraLines);
+                        property.FindPropertyRelative(getDrawings[i][j].display.variableName),
+                        originalPosition,
+                        indent,
+                        ref copy);
+
+                    rowHeight = Mathf.Max(rowHeight, copy.height);
                 }
                 else
                 {
                     if (getDrawings[i][j].display.style == null)
                         EditorGUI.LabelField(
-                            rect,
+                            drawBox,
                             getDrawings[i][j].display.labelText);
                     else
                         EditorGUI.LabelField(
-                            rect,
+                            drawBox,
                             getDrawings[i][j].display.labelText,
                             getDrawings[i][j].display.style);
                 }
 
-                xPosition += width;
+                drawBox.x += drawBox.width + EditorGUIUtility.standardVerticalSpacing;
             }
-
-            extraLines += currentExtraLines;
+            
+            drawBox.x = originalX;
+            drawBox.y += rowHeight;
+            height += rowHeight;
         }
 
         EditorGUI.indentLevel = indent;
         EditorGUI.EndProperty();
     }
 
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        int totalLines = GetDrawings.Length + extraLines;
-        int newLines = Mathf.Max(0, totalLines - 1);
+    public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => height;
 
-        return
-            base.GetPropertyHeight(property, label) * totalLines +
-            EditorGUIUtility.standardVerticalSpacing * newLines;
-    }
-
-    private void DrawPropertyField(SerializedProperty property, Rect rect, ref int currentExtraLines)
+    private void DrawPropertyField(SerializedProperty property, Rect originalPosition, int indent, ref Rect position)
     {
         GUIContent displayLabel;
-        bool isArray;
+        Rect useRect;
+
+        bool isArray = false;
+        float extraSpace = 0;
 
         if (property.isArray && property.propertyType != SerializedPropertyType.String)
         {
-            displayLabel = new GUIContent(property.displayName);
             isArray = true;
+
+            displayLabel = new GUIContent(property.displayName);            
+
+            useRect = originalPosition;
+            useRect.y = position.y;
+
+            if (height == 0)
+            {
+                //top-most row, there is no space on the left, so make one line
+                extraSpace = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+                useRect.y += extraSpace;
+            }
+
+            EditorGUI.indentLevel = indent;
+            EditorGUI.indentLevel++;
         }
         else
         {
             displayLabel = GUIContent.none;
-            isArray = false;
+            useRect = position;
         }
+
+        useRect.height = position.height = EditorGUI.GetPropertyHeight(property) + extraSpace;
 
         EditorGUI.PropertyField(
-            rect,
+            useRect,
             property,
             displayLabel,
-            false);
+            true);
 
-        if (isArray && property.isExpanded)
-        {
-            //EditorGUI.indentLevel++;
-            //+1 for array size field
-            currentExtraLines = Mathf.Max(currentExtraLines, property.arraySize + 1);           
-
-            rect.y += rect.height + EditorGUIUtility.standardVerticalSpacing;
-
-            Rect leftRect;
-            Rect rightRect;
-
-            leftRect = rightRect = rect;
-            leftRect.width = rightRect.width = rect.width * 0.5f;// + 8; //<< Why is there 8px missing?!
-
-            rightRect.x = leftRect.xMax;// - 16;
-
-            EditorGUI.LabelField(
-                leftRect,
-                "size",
-                leftAlign);
-
-            EditorGUI.PropertyField(
-                rightRect,
-                property.FindPropertyRelative("Array.size"),
-                GUIContent.none,
-                false);
-
-            int size = property.arraySize;
-            for (int i = 0; i < size; i++)
-            {
-                rect.y += rect.height + EditorGUIUtility.standardVerticalSpacing;
-                DrawPropertyField(property.GetArrayElementAtIndex(i), rect, ref currentExtraLines);                
-            }
-
-            //EditorGUI.indentLevel--;
-        }
+        if(isArray)
+            EditorGUI.indentLevel = 0;
     }
 }

@@ -18,5 +18,7 @@ MonoBehaviour:
   armsPrefab: {fileID: 5034775859275570299, guid: 247c8ae349ef24c4fbddab3c11d70db9,
     type: 3}
   usableConfigs:
-  - array: 05000000
-  - array: 06000000
+    configs:
+    - array: 0200000000000000
+    - array: 0100000000000000
+    - array: 00000000000000000000000000000000

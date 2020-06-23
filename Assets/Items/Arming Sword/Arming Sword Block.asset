@@ -27,11 +27,17 @@ MonoBehaviour:
         duration: -1
         attributes:
         - attribute: 0
-          value: -50
-        - attribute: 1
-          value: -50
-        maxResources: []
-        regenResources: []
+          value: 0
+        maxResources:
+        - resource: 0
+          value: 0
+        - resource: 0
+          value: 0
+        regenResources:
+        - resource: 0
+          value: 0
+        - resource: 0
+          value: 0
       toggle: Left Shield Up
     rightHand:
       damageReduction: 1
@@ -41,11 +47,19 @@ MonoBehaviour:
         duration: -1
         attributes:
         - attribute: 0
-          value: -50
+          value: 100
         - attribute: 1
-          value: -50
-        maxResources: []
-        regenResources: []
+          value: 100
+        maxResources:
+        - resource: 0
+          value: 100
+        - resource: 1
+          value: 100
+        regenResources:
+        - resource: 0
+          value: 100
+        - resource: 1
+          value: 100
       toggle: Right Shield Up
     bothHands:
       damageReduction: 1

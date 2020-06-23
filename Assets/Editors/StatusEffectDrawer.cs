@@ -15,8 +15,14 @@ public class StatusEffectDrawer : GridPropertyDrawer
         },
         new DrawInstruction[]
         {
-            new DrawInstruction(DrawDisplay.Variable("attributes"), DrawSize.Shared),
-            new DrawInstruction(DrawDisplay.Variable("maxResources"), DrawSize.Shared),
+            new DrawInstruction(DrawDisplay.Variable("attributes"), DrawSize.Shared)
+        },
+        new DrawInstruction[]
+        {
+            new DrawInstruction(DrawDisplay.Variable("maxResources"), DrawSize.Shared)
+        },
+        new DrawInstruction[]
+        {
             new DrawInstruction(DrawDisplay.Variable("regenResources"), DrawSize.Shared)
         }
     };

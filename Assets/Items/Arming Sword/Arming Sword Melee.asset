@@ -30,7 +30,17 @@ MonoBehaviour:
         attributes:
         - attribute: 0
           value: -50
-        maxResources: []
+        - attribute: 0
+          value: -50
+        - attribute: 0
+          value: -50
+        - attribute: 0
+          value: -50
+        maxResources:
+        - resource: 0
+          value: 0
+        - resource: 0
+          value: 0
         regenResources: []
       attackTrigger: Left Swing
       ricochetTrigger: Left Reflected Stagger
