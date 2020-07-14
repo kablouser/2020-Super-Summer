@@ -2,32 +2,29 @@
 using UnityEngine.InputSystem;
 using static Fighter;
 
-[RequireComponent(typeof(Movement))]
-[RequireComponent(typeof(Equipment))]
-[RequireComponent(typeof(Fighter))]
-[RequireComponent(typeof(PlayerInput))]
 public class PlayerControl : MonoBehaviour
 {
     private struct QueuedAction
     {
         public bool isNew;
         public AbilityIndex index;
-        public bool buttonDown;
-        public QueuedAction(AbilityIndex index, bool buttonDown)
+        public QueuedAction(AbilityIndex index)
         {
-            isNew = true; this.index = index; this.buttonDown = buttonDown;
+            isNew = true; this.index = index;
         }
     }
+
+    public PlayerComponents playerComponents;
 
     private Movement movement;
     private Equipment equipment;
     private Fighter fighter;
-    private PlayerInput playerInput;    
+    private PlayerInput playerInput;
     
     private Vector2 currentLook;
     private Vector2 inputLook;
 
-    private QueuedAction nextAction;
+    private QueuedAction downAction;
 
     public void Move(InputAction.CallbackContext context)
     {
@@ -58,20 +55,20 @@ public class PlayerControl : MonoBehaviour
     }    
     private void ProcessHandInput(AbilityIndex index, InputActionPhase phase)
     {
-        if(nextAction.isNew && index < nextAction.index)
+        if(downAction.isNew && index < downAction.index)
             return;
 
         if (phase == InputActionPhase.Started)
-            nextAction = new QueuedAction(index, true);
+            downAction = new QueuedAction(index);
         else if (phase == InputActionPhase.Canceled)
-            nextAction = new QueuedAction(index, false);
+            fighter.UseAbility(index, false, out _);
     }
     private void Awake()
     {
-        movement = GetComponent<Movement>();
-        equipment = GetComponent<Equipment>();
-        fighter = GetComponent<Fighter>();
-        playerInput = GetComponent<PlayerInput>();
+        movement = playerComponents.movement;
+        equipment = playerComponents.equipment;
+        fighter = playerComponents.fighter;
+        playerInput = playerComponents.playerInput;
     }
     private void Start()
     {
@@ -91,10 +88,10 @@ public class PlayerControl : MonoBehaviour
         currentLook += inputLook;
         movement.SetLook(ref currentLook.x, currentLook.y);
 
-        if(nextAction.isNew)
+        if(downAction.isNew)
         {
-            nextAction.isNew = false;
-            fighter.UseAbility(nextAction.index, nextAction.buttonDown, out _);
+            downAction.isNew = false;
+            fighter.UseAbility(downAction.index, true, out _);
         }
     }
 }

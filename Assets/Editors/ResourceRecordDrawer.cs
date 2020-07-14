@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+
+using UnityEditor;
 
 [CustomPropertyDrawer(typeof(CharacterSheet.ResourceRecord))]
 public class ResourceRecordDrawer : GridPropertyDrawer
@@ -23,3 +25,5 @@ public class ResourceRecordDrawer : GridPropertyDrawer
         }
     };
 }
+
+#endif

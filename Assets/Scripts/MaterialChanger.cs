@@ -9,7 +9,7 @@ public class MaterialChanger : MonoBehaviour
 
     private bool usingOriginal = true;
     private Material[][] originalMaterials;
-    private Coroutine flickerRoutine;    
+    private Coroutine flickerRoutine;
 
     private void Awake()
     {

@@ -1,6 +1,58 @@
-progression :
+Progression :
 	no player levels - not needed
 	new spells that do new things - but not neccessarily higher damage
 	encourage players to use new weapons/spells
 	keep everything viable throughout the game
 	enchant weapons/armours to upgrade them with new effects
+
+Western RPG essential :
+	expression of self
+	meaningful and impactful choices
+
+Ability System (traditional MMO):
+	skill bar (1-10)
+	casting uses a certain weapon equipped
+	each weapon has 1 hold config
+	1 basic attack (blocking not included)
+	switching weapon is not useful
+
+Ability System (DND):
+	skill list (lots)
+	casting has no restrictions	
+	each weapon has 1 hold config
+	1 basic attack
+	switching weapon takes time
+
+Ability System (Souls-Bourne):
+	skill list (1-5 ish)
+	casting uses catalysts or weapon arts
+	each weapon has all 3 hold configs
+	2 basic attacks
+	2 special attacks
+	switching weapon is useful but clunky
+
+Ability System (Skyrim):
+	skill list (lots -> hotkey'd to 10)
+	casting uses 1 hand
+	each weapon has 1 hold config
+	2 basic attacks
+	switching weapon is useful but pauses game
+
+Generic Ability System Template:
+	skill list count 	= 1-4
+	casting requirements 	= 1 empty hand or catalyst
+	weapon hold configs 	= 3
+	basic attacks 		= 2
+	special attacks 	= 2
+	switching weapon useful = true (how?) (share/tab => switch arms)
+
+All Weapon Types and Attack Layouts:
+	sword			L1 [light] L2 [charged heavy] R1 [block] R2 [parry] (ping off attacker, maybe deflect magic)
+	mace			L1 [light] L2 [charged heavy] R1 [block] R2 [parry?] (less effective but heavier attacks)
+	axe			L1 [light] L2 [charged heavy] R1 [block] R2 [parry??]
+
+Skill Learning System:
+	4 remembered skills, you have forget a skill to gain another
+	teacher	teach skills, followed by tutorials
+	situations where to use the new skill
+	remember skills at sleep

@@ -5,20 +5,19 @@ using System.Collections.Generic;
 public class DamageBox : MonoBehaviour
 {
     public Transform hiltPosition;
-    [Header("please initialise this in Start")]
     public Fighter owner;    
 
     private int damage;
-    private int staggerThreshold;
-    private string ricochetTrigger;
-    private HashSet<CharacterSheet> targetsAttacked;
+    private int heft;
+
+    private List<CharacterSheet> targetsAttacked;
     private Collider hitbox;
 
-    public void StartAttack(int damage, int staggerThreshold, string ricochetTrigger)
+    public void StartAttack(int damage, int heft)
     {
         this.damage = damage;
-        this.staggerThreshold = staggerThreshold;
-        this.ricochetTrigger = ricochetTrigger;
+        this.heft = heft;
+
         hitbox.enabled = true;
         targetsAttacked.Clear();
     }
@@ -26,6 +25,7 @@ public class DamageBox : MonoBehaviour
     public void StopAttack()
     {
         hitbox.enabled = false;
+        targetsAttacked.Clear();
     }
 
     private void Awake()
@@ -33,7 +33,7 @@ public class DamageBox : MonoBehaviour
         hitbox = GetComponent<Collider>();
         hitbox.enabled = false;
         hitbox.isTrigger = true;
-        targetsAttacked = new HashSet<CharacterSheet>();
+        targetsAttacked = new List<CharacterSheet>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -42,13 +42,16 @@ public class DamageBox : MonoBehaviour
         
         if (tag && targetsAttacked.Contains(tag.attachedCharacter) == false)
         {
-            tag.attachedCharacter.LandAttack(damage, other.ClosestPoint(hiltPosition.position), out int staggerAttacker);            
             targetsAttacked.Add(tag.attachedCharacter);
-            if(staggerThreshold <= staggerAttacker)
-            {
-                StopAttack();
-                owner.RicochetStagger(ricochetTrigger);
-            }
+
+            tag.attachedCharacter.LandAttack(
+                damage,
+                other.ClosestPoint(hiltPosition.position),
+                heft,
+                out int ricochet);
+
+            if (heft < ricochet)
+                owner.RicochetStagger();
         }
     }
 }

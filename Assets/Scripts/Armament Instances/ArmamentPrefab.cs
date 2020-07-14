@@ -1,65 +1,76 @@
 ﻿using UnityEngine;
-using static Armament;
-using static Fighter;
-public abstract class ArmamentPrefab : MonoBehaviour
-{
-    [Header("(Assigned before spawn)")]
-    public bool flipOnLeftHand;
-    // this is should be assigned in the prefab already
-    public IdleAnimation idleAnimation;
-    [Tooltip("Should be size 4 - unless you have a custom controls")]
-    public Ability[] abilitySet = new Ability[4];
 
-    [Header("(Assigned after Armament.SpawnPrefab)")]
+using static Armament;
+using static AbilityCreator;
+
+public class ArmamentPrefab : MonoBehaviour
+{
     // these are all assigned during SpawnPrefab in Armament
-    public Equipment equipment;
-    public CharacterSheet characterSheet;
-    public Fighter fighter;
+    public CharacterComponents characterComponents;
     // only used for inventory management
     public Armament armsScriptable;
     public Slot[] usedSlots;
     public HoldMethod holdMethod;
 
-    public virtual void MapAbilitySet(AbilityContainer[] fighterAbilitySet)
+    [Space]
+    // this is should be assigned in the prefab already
+    public bool flipOnLeftHand;
+    public IdleAnimation idleAnimation;
+    [Tooltip("Should be size 4 - unless you have a custom controls")]
+    public AbilityCreator[] abilitySet = new AbilityCreator[4];
+    private AbilityInstance[] abilityInstances;
+
+    public virtual void AfterSpawn()
     {
+        abilityInstances = new AbilityInstance[abilitySet.Length];
+        for (int i = 0; i < abilitySet.Length; i++)
+            if(abilitySet[i] != null)
+                abilityInstances[i] = abilitySet[i].CreateAbility(this, characterComponents);
+    }
+
+    public virtual void MapAbilitySet()
+    {
+        var fighter = characterComponents.fighter;
+
         if (holdMethod == HoldMethod.leftHand)
         {
-            fighterAbilitySet[0] = new AbilityContainer() { arms = this, ability = abilitySet[0] };
-            fighterAbilitySet[1] = new AbilityContainer() { arms = this, ability = abilitySet[1] };
+            fighter.AddAbility(0, abilityInstances[0], this);
+            fighter.AddAbility(1, abilityInstances[1], this);
         }
         else if (holdMethod == HoldMethod.rightHand)
         {
-            fighterAbilitySet[2] = new AbilityContainer() { arms = this, ability = abilitySet[2] };
-            fighterAbilitySet[3] = new AbilityContainer() { arms = this, ability = abilitySet[3] };
+            fighter.AddAbility(2, abilityInstances[2], this);
+            fighter.AddAbility(3, abilityInstances[3], this);
         }
         else if (holdMethod == HoldMethod.bothHands)
         {
-            fighterAbilitySet[0] = new AbilityContainer() { arms = this, ability = abilitySet[0] };
-            fighterAbilitySet[1] = new AbilityContainer() { arms = this, ability = abilitySet[1] };
-            fighterAbilitySet[2] = new AbilityContainer() { arms = this, ability = abilitySet[2] };
-            fighterAbilitySet[3] = new AbilityContainer() { arms = this, ability = abilitySet[3] };
+            fighter.AddAbility(0, abilityInstances[0], this);
+            fighter.AddAbility(1, abilityInstances[1], this);
+            fighter.AddAbility(2, abilityInstances[2], this);
+            fighter.AddAbility(3, abilityInstances[3], this);
         }
     }
 
-    public virtual void UnmapAbilitySet(AbilityContainer[] fighterAbilitySet)
+    public virtual void UnmapAbilitySet()
     {
-        AbilityContainer empty = new AbilityContainer();
+        var fighter = characterComponents.fighter;
+
         if (holdMethod == HoldMethod.leftHand)
         {
-            fighterAbilitySet[0] = empty;
-            fighterAbilitySet[1] = empty;
+            fighter.RemoveAbility(0);
+            fighter.RemoveAbility(1);
         }
         else if (holdMethod == HoldMethod.rightHand)
         {
-            fighterAbilitySet[2] = empty;
-            fighterAbilitySet[3] = empty;
+			fighter.RemoveAbility(2);
+            fighter.RemoveAbility(3);
         }
-        else if (holdMethod == HoldMethod.rightHand)
+        else if (holdMethod == HoldMethod.bothHands)
         {
-            fighterAbilitySet[0] = empty;
-            fighterAbilitySet[1] = empty;
-            fighterAbilitySet[2] = empty;
-            fighterAbilitySet[3] = empty;
+            fighter.RemoveAbility(0);
+            fighter.RemoveAbility(1);
+            fighter.RemoveAbility(2);
+            fighter.RemoveAbility(3);
         }
     }
 
@@ -74,14 +85,4 @@ public abstract class ArmamentPrefab : MonoBehaviour
         else
             transform.localRotation = Quaternion.identity;
     }
-
-    public delegate void OnAttackedHandler(ArmamentPrefab arms, int damage, Vector3 contactPoint, out int reduction, out int ricochet, out bool poise);
-    public virtual void OnAttacked(int damage, Vector3 contactPoint, out int reduction, out int ricochet, out bool poise)
-    {
-        reduction = ricochet = 0;
-        poise = false;
-    }
-
-    //required to start some scripts
-    public virtual void AfterSpawned() { }
 }

@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
-using static CharacterSheet;
 
 [RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(CharacterSheet))]
 public class Movement : MonoBehaviour
 {
     public const float lookUpperLimit = 40;
     public const float lookLowerLimit = -100;
 
     public const float moveAcceleration = 7;
+
+    public CharacterComponents characterComponents;
 
     public Transform head;
     public Transform model;
@@ -19,10 +19,8 @@ public class Movement : MonoBehaviour
     public PhysicMaterial staticMaterial;
     public float movementSpeed = 4;
     public float rotateSpeed = 200;
-    public bool lockInput;
 
-    private Rigidbody rigidbodyRef;
-    private CharacterSheet characterSheet;
+    private Rigidbody rigidbodyComponent;
 
     private Quaternion headForward;
     private Quaternion modelTargetRotation;
@@ -55,8 +53,11 @@ public class Movement : MonoBehaviour
     }
     private void Awake()
     {
-        rigidbodyRef = GetComponent<Rigidbody>();
-        characterSheet = GetComponent<CharacterSheet>();
+        rigidbodyComponent = characterComponents.rigidbodyComponent;
+    }
+    private void OnDisable()
+    {
+        SetFriction(true);
     }
     private void Update()
     {
@@ -64,7 +65,7 @@ public class Movement : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (lockInput || move == Vector3.zero)
+        if (move == Vector3.zero)
         {
             SetFriction(true);
         }
@@ -74,7 +75,7 @@ public class Movement : MonoBehaviour
 
             //rotate and scale by movementSpeed
             Vector3 targetDirection = headForward * move;
-            Vector3 currentVelocity = rigidbodyRef.velocity;
+            Vector3 currentVelocity = rigidbodyComponent.velocity;
             float speed = movementSpeed;
 
             if (grounded)
@@ -98,7 +99,7 @@ public class Movement : MonoBehaviour
             impulse.y = 0; //this is only horizontal
             impulse.z -= currentVelocity.z;
 
-            rigidbodyRef.AddForce(impulse, ForceMode.Impulse);
+            rigidbodyComponent.AddForce(impulse, ForceMode.Impulse);
         }
     }
     private void OnCollisionStay(Collision collisionInfo)

@@ -3,7 +3,6 @@ using System.Collections;
 
 public class AttackIndictator : MonoBehaviour
 {
-    public static readonly WaitForFixedUpdate routineWait = new WaitForFixedUpdate();
     public const float blockDistance = .8f;
     public const float lastHitFadeRate = 1.0f;
 
@@ -67,7 +66,7 @@ public class AttackIndictator : MonoBehaviour
 
             gradient.alphaKeys = fadeAlphas;
             line.colorGradient = gradient;
-            yield return routineWait;
+            yield return CoroutineConstants.waitFixed;
         }
 
         gradient.alphaKeys = lastHitAlphas;

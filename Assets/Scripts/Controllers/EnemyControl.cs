@@ -5,10 +5,6 @@ using System.Collections.Generic;
 
 using static Fighter;
 
-[RequireComponent(typeof(Movement))]
-[RequireComponent(typeof(Equipment))]
-[RequireComponent(typeof(Fighter))]
-[RequireComponent(typeof(NavMeshAgent))]
 public class EnemyControl : MonoBehaviour
 {
     [System.Serializable]
@@ -24,10 +20,10 @@ public class EnemyControl : MonoBehaviour
 
     public bool IsNavigating => agent.stoppingDistance < agent.remainingDistance;
 
-    public AbilityManual neutralMove = new AbilityManual() { choiceWeighting = 1f, engageRange = 4f, holdDuration = 1f, repeatable = false };
+    public EnemyComponents enemyComponents;
 
-    private readonly WaitForFixedUpdate wait = new WaitForFixedUpdate();
-
+    public AbilityManual neutralMove = new AbilityManual() { choiceWeighting = 1f, engageRange = 4f, holdDuration = 1f, repeatable = false };    
+        
     private Movement movement;
     private Equipment equipment;
     private Fighter fighter;
@@ -45,21 +41,12 @@ public class EnemyControl : MonoBehaviour
 
     private bool currentTargetAlive => currentTarget != null && currentTarget.enabled;
 
-    private void OnDrawGizmos()
-    {
-        if (Application.isPlaying == false)
-            return;
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawRay(transform.position, agent.desiredVelocity);
-    }
-
     private void Awake()
     {
-        movement = GetComponent<Movement>();
-        equipment = GetComponent<Equipment>();
-        fighter = GetComponent<Fighter>();
-        agent = GetComponent<NavMeshAgent>();
+        movement = enemyComponents.movement;
+        equipment = enemyComponents.equipment;
+        fighter = enemyComponents.fighter;
+        agent = enemyComponents.agent;
         movement.SetMove(0, 0);
 
         agent.updatePosition = agent.updateRotation = false;
@@ -106,9 +93,9 @@ public class EnemyControl : MonoBehaviour
             int index = 0;
             foreach(AbilityContainer container in currentAbilities)
             {
-                if(container.ability)
+                if(container.ability != null)
                 {
-                    AbilityManual getManual = container.ability.abilityManual;
+                    AbilityManual getManual = container.ability.creator.abilityManual;
                     totalWeighting += getManual.choiceWeighting;
                     usableAbilities.Add(getManual);
                     abilityIndexes.Add(index);
@@ -146,43 +133,6 @@ public class EnemyControl : MonoBehaviour
 
             usableAbilities.RemoveRange(1, usableAbilities.Count - 1);
             abilityIndexes.RemoveRange(1, abilityIndexes.Count - 1);
-
-            //Ability chosenAbility = null;
-            //if (Random.value < .8f)
-            //{
-            //    int tries = 0;
-            //    do
-            //    {
-            //        int randomIndex = Random.Range(0, currentAbilities.Length);
-            //        if (randomIndex == chosenIndex)
-            //            continue;
-
-            //        chosenIndex = randomIndex;
-            //        chosenAbility = currentAbilities[chosenIndex].ability;
-            //        if (chosenAbility != null)
-            //            break;
-            //        else
-            //            tries++;
-            //    }
-            //    while (tries < currentAbilities.Length);
-            //}
-            //else
-            //    chosenAbility = null;
-
-            //float engageRange;
-            //float holdDuration;
-
-            //if (chosenAbility == null)
-            //{
-            //    engageRange = 4f;
-            //    holdDuration = 1f;
-            //    chosenIndex = -1;
-            //}
-            //else
-            //{
-            //    engageRange = chosenAbility.aiEngageRange;
-            //    holdDuration = chosenAbility.aiHoldDuration;
-            //}
 
             float abilityStart = 0;
             bool usedAbility = false;
@@ -239,7 +189,7 @@ public class EnemyControl : MonoBehaviour
 
                     break;
                 }
-                yield return wait;
+                yield return CoroutineConstants.waitFixed;
             }
             while (currentTargetAlive);
         }
@@ -255,7 +205,7 @@ public class EnemyControl : MonoBehaviour
         if(isDirect)
             movement.SetMove(0, 1);
 
-        while (agent.pathPending) yield return wait;
+        while (agent.pathPending) yield return CoroutineConstants.waitFixed;
 
         do
         {
@@ -267,7 +217,7 @@ public class EnemyControl : MonoBehaviour
                 movement.SetMove(desiredVelocity.x, desiredVelocity.z);
             }
             agent.nextPosition = transform.position;
-            yield return wait;
+            yield return CoroutineConstants.waitFixed;
         }
         while(IsNavigating);
 

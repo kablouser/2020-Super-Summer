@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+
+using UnityEngine;
 using UnityEditor;
 
 public abstract class GridPropertyDrawer : PropertyDrawer
@@ -49,6 +51,7 @@ public abstract class GridPropertyDrawer : PropertyDrawer
     }
 
     protected abstract DrawInstruction[][] GetDrawings { get; }
+    protected virtual bool IgnorePrefix { get => false; }
     protected const float unitWidth = 10f;
 
     protected static readonly GUIStyle leftAlign = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleLeft };
@@ -60,6 +63,9 @@ public abstract class GridPropertyDrawer : PropertyDrawer
     public override void OnGUI(Rect originalPosition, SerializedProperty property, GUIContent label)
     {
         EditorGUI.BeginProperty(originalPosition, label, property);
+
+        if (IgnorePrefix)
+            label.text = " ";
 
         Rect prefixedPosition = EditorGUI.PrefixLabel(originalPosition, GUIUtility.GetControlID(FocusType.Passive), label);
         Rect drawBox = prefixedPosition;
@@ -156,12 +162,15 @@ public abstract class GridPropertyDrawer : PropertyDrawer
         {
             isArray = true;
 
-            displayLabel = new GUIContent(property.displayName);            
+            if (IgnorePrefix)
+                displayLabel = GUIContent.none;
+            else
+                displayLabel = new GUIContent(property.displayName);
 
             useRect = originalPosition;
             useRect.y = position.y;
 
-            if (height == 0)
+            if (height == 0 && IgnorePrefix == false)
             {
                 //top-most row, there is no space on the left, so make one line
                 extraSpace = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
@@ -178,14 +187,16 @@ public abstract class GridPropertyDrawer : PropertyDrawer
         }
 
         useRect.height = position.height = EditorGUI.GetPropertyHeight(property) + extraSpace;
-
+                
         EditorGUI.PropertyField(
             useRect,
             property,
             displayLabel,
             true);
 
-        if(isArray)
+        if (isArray)
             EditorGUI.indentLevel = 0;
     }
 }
+
+#endif

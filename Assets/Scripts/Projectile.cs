@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class Projectile : MonoBehaviour
 {
-    [Header("(Assigned before spawn)")]
+    //Assigned before spawn
     public GameObject travellingEffect;
     public GameObject impactEffect;
     public float impactDuration;
@@ -13,8 +13,9 @@ public class Projectile : MonoBehaviour
     public float gravityModifier;
     public float range;
 
-    [Header("(Assigned after RangedAbility.Use)")]
+    //Assigned after RangedAbility.Use
     public int damage;
+    public int heft;
     public CharacterSheet shooter;
 
     private Vector3 velocity;
@@ -67,7 +68,11 @@ public class Projectile : MonoBehaviour
             }
 
             //damage!
-            tag.attachedCharacter.LandAttack(damage, other.ClosestPoint(transform.position), out _);            
+            tag.attachedCharacter.LandAttack(
+                damage,
+                other.ClosestPoint(transform.position),
+                heft,
+                out _);            
         }
 
         enabled = false;

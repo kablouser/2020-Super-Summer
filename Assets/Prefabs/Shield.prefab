@@ -57,6 +57,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -81,6 +82,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &2021379654682160897
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -106,6 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d628a53d2d48ea48ab29d879755707f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hiltPosition: {fileID: 0}
   owner: {fileID: 0}
 --- !u!1 &8067523857629906881
 GameObject:
@@ -148,22 +151,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 8067523857629906881}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2aa2948559108fc4b9cbed1552d41bce, type: 3}
+  m_Script: {fileID: 11500000, guid: e82a05ff265743a42808a6918ae56f5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flipOnLeftHand: 1
-  idleAnimation: 0
-  abilitySet:
-  - {fileID: 11400000, guid: f8225a414b2fca843a3506a493e8fbe8, type: 2}
-  - {fileID: 0}
-  - {fileID: 11400000, guid: 788a2a6523315e844bc6b403d1951159, type: 2}
-  - {fileID: 0}
-  equipment: {fileID: 0}
-  characterSheet: {fileID: 0}
-  fighter: {fileID: 0}
+  characterComponents: {fileID: 0}
   armsScriptable: {fileID: 0}
   usedSlots: 
   holdMethod: 0
-  damageBoxes:
-  - {fileID: 371996019968446847}
-  blockIndicator: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  flipOnLeftHand: 1
+  idleAnimation: 0
+  abilitySet:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  damageBoxes: []
+  projectileSpawn: {fileID: 0}

@@ -69,7 +69,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2310126132781421446}
-  - component: {fileID: 5034775859275570299}
+  - component: {fileID: 5347432824353024378}
   m_Layer: 0
   m_Name: Sword
   m_TagString: Untagged
@@ -93,7 +93,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5034775859275570299
+--- !u!114 &5347432824353024378
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,9 +102,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 3071634250931409174}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2aa2948559108fc4b9cbed1552d41bce, type: 3}
+  m_Script: {fileID: 11500000, guid: e82a05ff265743a42808a6918ae56f5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterComponents: {fileID: 0}
+  armsScriptable: {fileID: 0}
+  usedSlots: 
+  holdMethod: 0
   flipOnLeftHand: 0
   idleAnimation: 0
   abilitySet:
@@ -112,12 +116,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 11400000, guid: 788a2a6523315e844bc6b403d1951159, type: 2}
   - {fileID: 11400000, guid: 3b38a3b1b81aa544093d1869443e01dd, type: 2}
-  equipment: {fileID: 0}
-  characterSheet: {fileID: 0}
-  fighter: {fileID: 0}
-  armsScriptable: {fileID: 0}
-  usedSlots: 
-  holdMethod: 0
   damageBoxes:
   - {fileID: 3330501107293271038}
   projectileSpawn: {fileID: 7645530181441262172}
@@ -179,6 +177,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -203,6 +202,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7020509156382586054
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -228,5 +228,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d628a53d2d48ea48ab29d879755707f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  owner: {fileID: 0}
   hiltPosition: {fileID: 3069401003593606343}
+  owner: {fileID: 0}
