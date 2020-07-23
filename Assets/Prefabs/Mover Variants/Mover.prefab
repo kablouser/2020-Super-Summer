@@ -530,21 +530,23 @@ MonoBehaviour:
   totalVolume: 0
   characterComponents: {fileID: 7269220184266970307}
   equipmentTransforms:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 8992035156704892136}
-  - {fileID: 8299816670567078537}
+    array:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 8992035156704892136}
+    - {fileID: 8299816670567078537}
   equippedArms:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+    array:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
 --- !u!114 &272921500630766742
 MonoBehaviour:
   m_ObjectHideFlags: 0

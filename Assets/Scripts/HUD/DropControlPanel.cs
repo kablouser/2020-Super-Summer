@@ -9,7 +9,7 @@ public class DropControlPanel : Panel
     public override Selectable SelectOnFocus => slider;
     public override Selectable SelectOnDefocus => controlling.selectable;    
 
-    public EquipmentDisplayer master;
+    public InventoryPanel master;
     public TMP_InputField inputField;
     public Slider slider;
     public DroppedItem droppedItemPrefab;
@@ -21,11 +21,11 @@ public class DropControlPanel : Panel
     {
         controlling = target;
 
-        int count = master.playerEquipment.inventory[target.inventoryIndex].count;
+        int count = master.playerEquipment.inventory[target.itemIndex].count;
         inputField.SetTextWithoutNotify(count.ToString());
         slider.value = slider.maxValue = count;
 
-        Show(target.rectTransform);
+        Show(target.RectTransform);
     }
 
     public override void Hide()
@@ -39,7 +39,7 @@ public class DropControlPanel : Panel
         if (int.TryParse(inputField.text, out int setInteger) == false)
             return;
 
-        int max = master.playerEquipment.inventory[controlling.inventoryIndex].count;
+        int max = master.playerEquipment.inventory[controlling.itemIndex].count;
 
         if (setInteger < 0)
         {
@@ -63,7 +63,7 @@ public class DropControlPanel : Panel
 
     public void DropAndHide(bool nextFrame = false)
     {
-        DropItem((int)slider.value, controlling.inventoryIndex);
+        DropItem((int)slider.value, controlling.itemIndex);
 
         if (nextFrame)
             HideNextFrame();

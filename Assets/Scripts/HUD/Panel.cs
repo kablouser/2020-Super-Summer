@@ -14,20 +14,11 @@ public abstract class Panel : MonoBehaviour
 
     private Coroutine hideNextFrameRoutine;
 
-    public virtual void OnEnable()
-    {
-        DeviceSwitcher.Instance.EnablePanel(this);
-    }
-
-    public virtual void OnDisable()
-    {
-        DeviceSwitcher.Instance.DisablePanel(this);
-    }
-
     public virtual void OnSubmit() { }
 
     protected virtual void Show(RectTransform targetPosition)
     {
+        EventSystemModifier.Instance.EnablePanel(this);
         if (hideNextFrameRoutine != null)
             StopCoroutine(hideNextFrameRoutine);
 
@@ -38,7 +29,7 @@ public abstract class Panel : MonoBehaviour
 
         gameObject.SetActive(true);
 
-        if (DeviceSwitcher.Instance.IsUsingMouse == false)
+        if (EventSystemModifier.Instance.IsUsingMouse == false)
         {
             var trySelect = SelectOnFocus;
             if(trySelect != null)
@@ -48,11 +39,12 @@ public abstract class Panel : MonoBehaviour
 
     public virtual void Hide()
     {
+        EventSystemModifier.Instance.DisablePanel(this);
         if (IsShown)
         {
             gameObject.SetActive(false);
 
-            if (DeviceSwitcher.Instance.IsUsingMouse == false)
+            if (EventSystemModifier.Instance.IsUsingMouse == false)
             {
                 var trySelect = SelectOnDefocus;
                 if (trySelect != null)

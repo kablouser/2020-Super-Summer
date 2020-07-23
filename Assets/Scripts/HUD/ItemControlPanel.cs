@@ -12,7 +12,7 @@ public class ItemControlPanel : Panel
         public bool showMove;
     }
 
-    public EquipmentDisplayer master;
+    public InventoryPanel master;
     public Transform hiddenParent;
     public Transform shownParent;
 
@@ -30,7 +30,7 @@ public class ItemControlPanel : Panel
         SetOption(moveButton, showOptions.showMove);
         LinkNavigation();
 
-        Show(target.rectTransform);
+        Show(target.RectTransform);
     }
 
     public override void Hide()
@@ -41,7 +41,7 @@ public class ItemControlPanel : Panel
 
     public void MoveItem()
     {
-        master.BeginDrag(controlling.inventoryIndex, false);
+        master.BeginDrag(controlling);
         Hide();
     }
 
@@ -50,8 +50,8 @@ public class ItemControlPanel : Panel
         var copy = controlling;
         Hide();
 
-        if (master.playerEquipment.inventory[copy.inventoryIndex].count == 1)
-            master.dropControlPanel.DropItem(1, copy.inventoryIndex);
+        if (master.playerEquipment.inventory[copy.itemIndex].count == 1)
+            master.dropControlPanel.DropItem(1, copy.itemIndex);
         else
             master.dropControlPanel.Show(copy);
     }

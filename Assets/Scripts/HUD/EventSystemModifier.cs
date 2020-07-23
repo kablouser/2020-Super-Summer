@@ -7,13 +7,35 @@ using UnityEngine.InputSystem.UI;
 
 using System.Collections.Generic;
 
-public class DeviceSwitcher : Singleton<DeviceSwitcher>
+public class EventSystemModifier : Singleton<EventSystemModifier>
 {
+    /// <summary>
+    /// Special case navigation that can ignore some checks for resetting the selected object.
+    /// Example use :: move item displayer around with arrow keys with navigation disabled but don't deselect that object.
+    /// </summary>
+    public interface ISpecialNavigation
+    {
+        bool HasNavigation();
+    }
+
+    public interface IFirstOptionHandler
+    {
+        void OnFirstOption();
+    }
+
+    public interface ISecondOptionHandler
+    {
+        void OnSecondOption();
+    }
+
     public Selectable Hovered { get; private set; }
     public bool IsUsingMouse { get; private set; }
 
     public PlayerInput playerInput;
     public InputSystemUIInputModule inputModule;
+
+    public InputActionReference FirstOptionAction;
+    public InputActionReference SecondOptionAction;
 
     private List<RaycastResult> raycastResults;
     private PointerEventData pointerData;
@@ -41,42 +63,48 @@ public class DeviceSwitcher : Singleton<DeviceSwitcher>
     {
         UpdateDevice(playerInput.devices[0]);
         InputUser.onChange += OnChange;
-        inputModule.point.action.performed += OnPoint;
+
         inputModule.move.action.performed += OnMove;
         inputModule.leftClick.action.performed += OnClick;
-        inputModule.middleClick.action.performed += OnClick;
-        inputModule.rightClick.action.performed += OnClick;
         inputModule.cancel.action.performed += OnCancel;
         inputModule.submit.action.performed += OnSubmit;
+        
+        FirstOptionAction.action.Enable();
+        SecondOptionAction.action.Enable();
+        FirstOptionAction.action.performed += OnFirstOption;
+        SecondOptionAction.action.performed += OnSecondOption;
     }
 
     private void OnDisable()
     {
         InputUser.onChange -= OnChange;
-        inputModule.point.action.performed -= OnPoint;
+
         inputModule.move.action.performed -= OnMove;
         inputModule.leftClick.action.performed -= OnClick;
-        inputModule.middleClick.action.performed -= OnClick;
-        inputModule.rightClick.action.performed -= OnClick;
         inputModule.cancel.action.performed -= OnCancel;
         inputModule.submit.action.performed -= OnSubmit;
+
+        FirstOptionAction.action.Disable();
+        SecondOptionAction.action.Disable();
+        FirstOptionAction.action.performed -= OnFirstOption;
+        SecondOptionAction.action.performed -= OnSecondOption;
     }
 
-    private void OnChange(InputUser user, InputUserChange change, InputDevice device)
+    private void Update()
     {
-        if (change == InputUserChange.DevicePaired)
-            UpdateDevice(device);
-    }
-
-    private void OnPoint(InputAction.CallbackContext context)
-    {
-        if (IsUsingMouse)
+        if (IsUsingMouse && Mouse.current.leftButton.isPressed == false)
         {
             //select current hovered
             Hovered = GetHovered();
             if (Hovered != null)
                 EventSystem.current.SetSelectedGameObject(Hovered.gameObject);
         }
+    }
+
+    private void OnChange(InputUser user, InputUserChange change, InputDevice device)
+    {
+        if (change == InputUserChange.DevicePaired)
+            UpdateDevice(device);
     }
 
     private void OnMove(InputAction.CallbackContext context)
@@ -89,7 +117,7 @@ public class DeviceSwitcher : Singleton<DeviceSwitcher>
         GameObject selected = EventSystem.current.currentSelectedGameObject;
         if (selected == null ||
             selected.activeInHierarchy == false ||
-            HasNoNavigation(selected.GetComponent<Selectable>()))
+            HasNavigation(selected) == false)
         {
             Selectable trySelect = panels[panels.Count - 1].SelectOnFocus;
             if (trySelect != null)
@@ -131,6 +159,35 @@ public class DeviceSwitcher : Singleton<DeviceSwitcher>
         panels[panels.Count - 1].OnSubmit();
     }
 
+    private void OnFirstOption(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            GameObject selected = EventSystem.current.currentSelectedGameObject;
+            if (selected != null)
+            {
+                IFirstOptionHandler firstOption = selected.GetComponent<IFirstOptionHandler>();
+                if (firstOption != null)
+                    firstOption.OnFirstOption();
+            }
+        }
+    }
+
+    private void OnSecondOption(InputAction.CallbackContext context)
+    {
+        Debug.Log(string.Format("{0} {1} {2}", context.phase, context.ReadValueAsButton(), context.canceled));
+        if (context.performed)
+        {
+            GameObject selected = EventSystem.current.currentSelectedGameObject;
+            if (selected != null)
+            {
+                ISecondOptionHandler secondOption = selected.GetComponent<ISecondOptionHandler>();
+                if (secondOption != null)
+                    secondOption.OnSecondOption();
+            }
+        }
+    }
+
     private void UpdateDevice(InputDevice device)
     {
         SetMouse(device is Mouse || device is Keyboard);
@@ -146,7 +203,6 @@ public class DeviceSwitcher : Singleton<DeviceSwitcher>
         if(isUsing)
         {
             //update our mouse's position
-            OnPoint(default);
         }
         else
         {
@@ -186,15 +242,21 @@ public class DeviceSwitcher : Singleton<DeviceSwitcher>
         }
     }
 
-    private bool HasNoNavigation(Selectable selectable)
+    private bool HasNavigation(GameObject selectableObject)
     {
-        Navigation navigation = selectable.navigation;
+        ISpecialNavigation specialNavigation = selectableObject.GetComponent<ISpecialNavigation>();
+        if(specialNavigation != null)
+            return specialNavigation.HasNavigation();
 
+        Navigation navigation = selectableObject.GetComponent<Selectable>().navigation;
+
+        if (navigation.mode == Navigation.Mode.Automatic)
+            return true;
         if (navigation.mode == Navigation.Mode.Explicit)
-            return navigation.selectOnDown == null &&
-                navigation.selectOnLeft == null &&
-                navigation.selectOnRight == null &&
-                navigation.selectOnUp == null;
+            return navigation.selectOnDown != null ||
+                navigation.selectOnLeft != null ||
+                navigation.selectOnRight != null ||
+                navigation.selectOnUp != null;
         else
             return false;
     }

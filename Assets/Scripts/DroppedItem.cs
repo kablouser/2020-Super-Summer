@@ -5,6 +5,10 @@ using static Inventory;
 
 public class DroppedItem : MonoBehaviour
 {
+    public const float MaxPickupRange = 1;
+
+    public Item GetItem { get => itemData.item; }
+
     public SpriteRenderer iconRenderer;
     public TextMeshPro countDisplay;
 
@@ -18,6 +22,12 @@ public class DroppedItem : MonoBehaviour
     {
         itemData = data;
         UpdateVisuals();
+    }
+
+    public void Pickup(Inventory intoInventory)
+    {
+        if(intoInventory.AddItem(itemData.item, itemData.count, out _))
+            Destroy(gameObject);
     }
 
     [ContextMenu("UpdateVisuals")]

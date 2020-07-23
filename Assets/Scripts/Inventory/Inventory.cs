@@ -18,22 +18,16 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public interface IUpdateInventory
-    {
-        //CRUD
-        void InsertEntry(int index, InventoryEntry entry);
-        void UpdateEntry(int index, InventoryEntry entry);
-        void DeleteEntry(int index);
-        void ReorderEntry(int oldIndex, int newIndex);
-    }
-
     [SerializeField] public List<InventoryEntry> inventory;
     [Tooltip("Set to -1 for no limit")]
     public int maxVolume = -1;
     public int GetTotalWeight { get { return totalWeight; } }
     public int GetTotalVolume { get { return totalVolume; } }
 
-    public List<IUpdateInventory> updateInterfaces;
+    public event System.Action<int, InventoryEntry> OnInventoryInsert;
+    public event System.Action<int, InventoryEntry> OnInventoryUpdate;
+    public event System.Action<int> OnInventoryDelete;
+    public event System.Action<int, int> OnInventoryReorder;
 
     [SerializeField]
     private int totalWeight;
@@ -55,30 +49,32 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public virtual bool AddItem(Item item, int count)
+    public virtual bool AddItem(Item item, int count, out int addedIndex)
     {
         if (maxVolume != -1 && maxVolume < totalVolume + item.volume * count)
+        {
+            addedIndex = -1;
             return false;
+        }
         else
         {
             totalWeight += item.grams * count;
             totalVolume += item.volume * count;
         }
         
-        if(FindItem(item, out InventoryEntry result, out int index))
+        if(FindItem(item, out InventoryEntry result, out addedIndex))
         {
             result.count += count;
-            inventory[index] = result;
+            inventory[addedIndex] = result;
 
-            foreach (var updateInterface in updateInterfaces)
-                updateInterface.UpdateEntry(index, inventory[index]);
+            OnInventoryUpdate?.Invoke(addedIndex, inventory[addedIndex]);
         }
         else
         {
+            addedIndex = inventory.Count;
             inventory.Add(new InventoryEntry() { item = item, count = count });
-
-            foreach (var updateInterface in updateInterfaces)
-                updateInterface.InsertEntry(inventory.Count - 1, inventory[inventory.Count - 1]);
+            
+            OnInventoryInsert?.Invoke(addedIndex, inventory[addedIndex]);
         }
 
         return true;
@@ -102,14 +98,12 @@ public class Inventory : MonoBehaviour
                 if (entry.count <= 0)
                 {
                     inventory.RemoveAt(index);
-                    foreach (var updateInterface in updateInterfaces)
-                        updateInterface.DeleteEntry(index);
+                    OnInventoryDelete?.Invoke(index);
                 }
                 else
                 {
                     inventory[index] = entry;
-                    foreach (var updateInterface in updateInterfaces)
-                        updateInterface.UpdateEntry(index, entry);
+                    OnInventoryUpdate?.Invoke(index, entry);
                 }
 
                 missingCount = 0;
@@ -144,14 +138,8 @@ public class Inventory : MonoBehaviour
             inventory.RemoveAt(oldIndex);
             inventory.Insert(newIndex, copy);
 
-            foreach (var updateInterface in updateInterfaces)
-                updateInterface.ReorderEntry(oldIndex, newIndex);
+            OnInventoryReorder?.Invoke(oldIndex, newIndex);
         }
-    }
-
-    protected virtual void Awake()
-    {
-        updateInterfaces = new List<IUpdateInventory>();
     }
 
     protected virtual void Start()

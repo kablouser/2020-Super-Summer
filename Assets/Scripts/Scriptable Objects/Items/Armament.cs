@@ -26,33 +26,35 @@ public class Armament : Item
     /// 2. If none are available it will find a config containing the attempted slot.
     /// 3. Otherwise another config is used.
     /// </summary>
-    public virtual void EquipRequirements(Equipment equipment, Slot attemptSlot, out Slot[] usedSlots)
+    public virtual void EquipRequirements(Equipment equipment, Slot attemptSlot, out Slot[] usedSlots, out bool onlyEmpty)
     {
         usedSlots = null;
 
         foreach (var config in usableConfigs)
         {
-            bool allFree = true;
+            onlyEmpty = true;
             bool containsAttemptSlot = false;            
             foreach (Slot slot in config.config)
             {
                 if (equipment.IsSlotFree(slot) == false)
-                    allFree = false;
+                    onlyEmpty = false;
                 if (slot == attemptSlot)
                     containsAttemptSlot = true;                
             }
 
-            if (allFree && containsAttemptSlot)
+            if (containsAttemptSlot)
             {
                 usedSlots = config.config;
                 return;
             }
-            if(usedSlots == null && allFree)
+            else if(attemptSlot == Slot.ANY && onlyEmpty)
             {
                 usedSlots = config.config;
+                return;
             }
         }
 
+        onlyEmpty = false;
         if (usedSlots == null)
             usedSlots = usableConfigs[0].config;
     }

@@ -83,6 +83,43 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_Enabled: 1
+--- !u!208 &563610929
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1604120775597152587}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 0
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
+--- !u!114 &1450256406620317199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1604120776946392748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a32a61d5f3a9cc4081f75d8ae365023, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rigidbodyComponent: {fileID: 1604120776946392751}
+  movement: {fileID: 1604120776946392750}
+  lifeToggler: {fileID: 3813918117498746111}
+  equipment: {fileID: 2370171922232950630}
+  characterSheet: {fileID: 2110254051661043539}
+  fighter: {fileID: 3970367748901286984}
+  animator: {fileID: 602310827827740047}
+  playerInput: {fileID: 4175870883712582504}
+  playerControl: {fileID: 8701915058264468606}
 --- !u!114 &4175870883712582504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,7 +161,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_ActionId: 1bc85200-86e7-4bcd-8177-60d2a740f120
-    m_ActionName: Player/Move[/DualShock4GamepadHID/leftStick,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+    m_ActionName: Player/Move[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 8701915058264468606}
@@ -140,12 +177,44 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_ActionId: 44891f06-3e08-40f4-bb78-ffbdd2ef376b
-    m_ActionName: Player/Look[/DualShock4GamepadHID/rightStick,/Mouse/delta]
+    m_ActionName: Player/Look[/Mouse/delta]
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 8701915058264468606}
         m_TargetAssemblyTypeName: 
-        m_MethodName: RightHand
+        m_MethodName: R2
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 35fc630e-8215-46f7-a323-1227987281b8
+    m_ActionName: Player/R2[/Keyboard/shift,/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8701915058264468606}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: L2
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 17e2e210-3471-40c9-bddb-ae9439f334e9
+    m_ActionName: Player/L2[/Keyboard/shift,/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8701915058264468606}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: R1
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -156,12 +225,12 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_ActionId: cfeafaf5-82a0-47d6-8178-5fd471195ea7
-    m_ActionName: Player/Right Hand[/DualShock4GamepadHID/rightTrigger,/Mouse/rightButton]
+    m_ActionName: Player/R1[/Mouse/rightButton]
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 8701915058264468606}
         m_TargetAssemblyTypeName: 
-        m_MethodName: LeftHand
+        m_MethodName: L1
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -172,19 +241,19 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_ActionId: 49b98eb0-e7a7-451b-856e-07cad2300ef8
-    m_ActionName: Player/Left Hand[/DualShock4GamepadHID/leftTrigger,/Mouse/leftButton]
+    m_ActionName: Player/L1[/Mouse/leftButton]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 37ff3494-f681-4010-9dc4-8a9795d709fc
-    m_ActionName: UI/Navigate[/DualShock4GamepadHID/leftStick/up,/DualShock4GamepadHID/rightStick/up,/DualShock4GamepadHID/leftStick/down,/DualShock4GamepadHID/rightStick/down,/DualShock4GamepadHID/leftStick/left,/DualShock4GamepadHID/rightStick/left,/DualShock4GamepadHID/leftStick/right,/DualShock4GamepadHID/rightStick/right,/DualShock4GamepadHID/dpad,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+    m_ActionName: UI/Navigate[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 0d5fde78-00cf-450f-9ad0-6b6402d310af
-    m_ActionName: UI/Submit[/Keyboard/enter,/DualShock4GamepadHID/buttonSouth]
+    m_ActionName: UI/Submit[/Keyboard/enter]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: a986cc30-ee9d-4429-ae4c-f56caea51944
-    m_ActionName: UI/Cancel[/Keyboard/escape,/DualShock4GamepadHID/buttonEast]
+    m_ActionName: UI/Cancel[/Keyboard/escape]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 4e325f96-734d-4989-af7c-2c809aa68eb2
@@ -214,15 +283,23 @@ MonoBehaviour:
     m_ActionId: 2b242dbd-44c8-4b47-89e5-2626923f1255
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 35fc630e-8215-46f7-a323-1227987281b8
-    m_ActionName: Player/R2[/Keyboard/shift,/Mouse/rightButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 17e2e210-3471-40c9-bddb-ae9439f334e9
-    m_ActionName: Player/L2[/Keyboard/shift,/Mouse/leftButton]
+      m_Calls:
+      - m_Target: {fileID: 8701915058264468606}
+        m_TargetAssemblyTypeName: PlayerControl, Assembly-CSharp
+        m_MethodName: Interact
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 6900ee68-dd56-4c08-848b-c2609a9b7adb
+    m_ActionName: Player/Interact[/Keyboard/f]
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: Keyboard&Mouse
+  m_DefaultControlScheme: 
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -239,27 +316,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerComponents: {fileID: 1450256406620317199}
---- !u!114 &1450256406620317199
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1604120776946392748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a32a61d5f3a9cc4081f75d8ae365023, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rigidbodyComponent: {fileID: 1604120776946392751}
-  movement: {fileID: 1604120776946392750}
-  lifeToggler: {fileID: 3813918117498746111}
-  equipment: {fileID: 2370171922232950630}
-  characterSheet: {fileID: 2110254051661043539}
-  fighter: {fileID: 3970367748901286984}
-  animator: {fileID: 602310827827740047}
-  playerInput: {fileID: 4175870883712582504}
-  playerControl: {fileID: 8701915058264468606}
 --- !u!1001 &2197963642957988805
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -309,7 +365,7 @@ PrefabInstance:
     - target: {fileID: 631145037350739305, guid: e31be4136d00fb644a84f5fb5fec4384,
         type: 3}
       propertyPath: m_Name
-      value: Player Variant
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 631145037350739307, guid: e31be4136d00fb644a84f5fb5fec4384,
         type: 3}
@@ -399,7 +455,7 @@ PrefabInstance:
     - target: {fileID: 4495778283869224099, guid: e31be4136d00fb644a84f5fb5fec4384,
         type: 3}
       propertyPath: inventory.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4495778283869224099, guid: e31be4136d00fb644a84f5fb5fec4384,
         type: 3}
@@ -414,7 +470,7 @@ PrefabInstance:
     - target: {fileID: 4495778283869224099, guid: e31be4136d00fb644a84f5fb5fec4384,
         type: 3}
       propertyPath: inventory.Array.data[0].count
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4495778283869224099, guid: e31be4136d00fb644a84f5fb5fec4384,
         type: 3}
@@ -431,13 +487,24 @@ PrefabInstance:
         type: 3}
       propertyPath: inventory.Array.data[1].item
       value: 
-      objectReference: {fileID: 11400000, guid: 9886a0399b467d04dbf9eee9faf82997,
+      objectReference: {fileID: 11400000, guid: fe28d32ca009124459c75aa9195f6342,
         type: 2}
     - target: {fileID: 4495778283869224099, guid: e31be4136d00fb644a84f5fb5fec4384,
         type: 3}
       propertyPath: characterComponents
       value: 
       objectReference: {fileID: 1450256406620317199}
+    - target: {fileID: 4495778283869224099, guid: e31be4136d00fb644a84f5fb5fec4384,
+        type: 3}
+      propertyPath: inventory.Array.data[2].count
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4495778283869224099, guid: e31be4136d00fb644a84f5fb5fec4384,
+        type: 3}
+      propertyPath: inventory.Array.data[2].item
+      value: 
+      objectReference: {fileID: 11400000, guid: 6a1ae1b84252a0746b9379bbc4abc68a,
+        type: 2}
     - target: {fileID: 7830155409956505466, guid: e31be4136d00fb644a84f5fb5fec4384,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -521,6 +588,12 @@ MonoBehaviour:
 --- !u!4 &6941259735438828638 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9139196425848072091, guid: e31be4136d00fb644a84f5fb5fec4384,
+    type: 3}
+  m_PrefabInstance: {fileID: 2197963642957988805}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1604120775597152587 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 631145036560915086, guid: e31be4136d00fb644a84f5fb5fec4384,
     type: 3}
   m_PrefabInstance: {fileID: 2197963642957988805}
   m_PrefabAsset: {fileID: 0}

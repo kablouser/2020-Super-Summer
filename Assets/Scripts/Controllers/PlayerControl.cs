@@ -4,6 +4,8 @@ using static Fighter;
 
 public class PlayerControl : MonoBehaviour
 {
+    public const float InteractionRange = 1f;
+
     private struct QueuedAction
     {
         public bool isNew;
@@ -13,8 +15,21 @@ public class PlayerControl : MonoBehaviour
             isNew = true; this.index = index;
         }
     }
+    private enum InteractType { droppedItem }
+    private struct InteractCache
+    {
+        public InteractType type;
+        public Object interactObject;
+        public InteractCache(InteractType type, Object interactObject)
+        {
+            this.type = type;
+            this.interactObject = interactObject;
+        }
+    }
 
     public PlayerComponents playerComponents;
+    public InteractionPanel interactionPanel;
+    public LayerMask interactionMask;
 
     private Movement movement;
     private Equipment equipment;
@@ -25,6 +40,8 @@ public class PlayerControl : MonoBehaviour
     private Vector2 inputLook;
 
     private QueuedAction downAction;
+
+    private InteractCache interactCache;
 
     public void Move(InputAction.CallbackContext context)
     {
@@ -52,7 +69,27 @@ public class PlayerControl : MonoBehaviour
     public void R1(InputAction.CallbackContext context)
     {
         ProcessHandInput(AbilityIndex.R1, context.phase);
-    }    
+    }
+    public void Interact(InputAction.CallbackContext context)
+    {
+        if (context.phase != InputActionPhase.Performed)
+            return;
+
+        if (interactCache.interactObject == null)
+            return;
+
+        switch(interactCache.type)
+        {
+            default:
+                Debug.LogWarning("Unimplemented interaction type", this);
+                return;
+            case InteractType.droppedItem:
+                ((DroppedItem)interactCache.interactObject).Pickup(equipment);
+                return;
+
+            //add other sorts of interactions here ...
+        }        
+    }
     private void ProcessHandInput(AbilityIndex index, InputActionPhase phase)
     {
         if(downAction.isNew && index < downAction.index)
@@ -72,7 +109,7 @@ public class PlayerControl : MonoBehaviour
     }
     private void Start()
     {
-        equipment.AutoEquip();
+        //equipment.AutoEquip();
     }
     private void OnEnable()
     {
@@ -88,10 +125,38 @@ public class PlayerControl : MonoBehaviour
         currentLook += inputLook;
         movement.SetLook(ref currentLook.x, currentLook.y);
 
-        if(downAction.isNew)
+        if (downAction.isNew)
         {
             downAction.isNew = false;
             fighter.UseAbility(downAction.index, true, out _);
         }
     }
+    private void FixedUpdate()
+    {
+        if (Physics.Raycast(movement.head.position, movement.head.forward,
+            out RaycastHit hitInfo, InteractionRange, interactionMask) == false)
+        {
+            interactCache.interactObject = null;
+            interactionPanel.Hide();
+            return;
+        }
+
+        Collider hitCollider = hitInfo.collider;
+        DroppedItem droppedItem;
+        if (droppedItem = hitCollider.GetComponent<DroppedItem>())
+        {
+            InteractCache newCache = new InteractCache(InteractType.droppedItem, droppedItem);
+            if (HasCacheChanged(newCache) == false)
+                return;
+            else
+                interactCache = newCache;
+
+            interactionPanel.SetText("Pick Up "+droppedItem.GetItem.name);
+        }
+
+        //add other sorts of interactions here ...
+    }
+
+    private bool HasCacheChanged(InteractCache newCache) =>
+        newCache.type != interactCache.type || newCache.interactObject != interactCache.interactObject;
 }

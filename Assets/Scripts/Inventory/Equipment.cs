@@ -1,142 +1,96 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using static Armament;
 
 public class Equipment : Inventory
 {
+    /// <summary>
+    /// inventoryIndex is only given on EquipArms, otherwise its -1
+    /// </summary>
+    public delegate void EquipmentUpdate(Slot slot, ArmamentPrefab prefab);
+
     [Space]
     public CharacterComponents characterComponents;
 
-    public Transform[] equipmentTransforms = new Transform[(int)Slot.MAX];
-    public ArmamentPrefab[] equippedArms = new ArmamentPrefab[(int)Slot.MAX];
+    public SlotArray<Transform> equipmentTransforms;
+    public SlotArray<ArmamentPrefab> equippedArms;
+
+    public event EquipmentUpdate OnEquipmentUpdate;
 
     private Fighter fighter;
 
-    //1x 2-handed weapon = 1, 2x 1-handed of the same weapon = 2
-    private Dictionary<Armament, int> equippedArmsCount = new Dictionary<Armament, int>((int)Slot.MAX);
-
     public bool IsSlotFree(Slot slot)
     {
-        return equippedArms[(int)slot] == null;
+        return equippedArms.array[(int)slot] == null;
     }
 
-    public bool EquipArms(int index, Slot intoSlot)
+    public bool EquipArms(int inventoryIndex, Slot intoSlot)
     {
-        if (inventory.Count <= index) return false;
+        if (inventory.Count <= inventoryIndex) return false;
 
-        InventoryEntry entry = inventory[index];
-        Armament arms = entry.item as Armament;
-        if (arms == null) return false;
-
-        if (equippedArmsCount.TryGetValue(arms, out int getCount))
+        if (inventory[inventoryIndex].item is Armament arms &&
+            EquipArms(arms, intoSlot))
         {
-            if (entry.count < getCount + 1)
-                return false;
-            else
-                equippedArmsCount[arms]++;
+            RemoveItem(inventoryIndex, 1, out _);
+            return true;
         }
-        else
-        {
-            if (entry.count <= 0)
-                return false;
-            else
-                equippedArmsCount.Add(arms, 1);
-        }
+        return false;
+    }
 
-        arms.EquipRequirements(this, intoSlot, out Slot[] usedSlots);
+    public bool EquipArms(Armament arms, Slot intoSlot)
+    {
+        //get the equipped into slots
+        arms.EquipRequirements(this, intoSlot, out Slot[] usedSlots, out _);
+        //try to stop all arms in those slots
         foreach (Slot usedSlot in usedSlots)
         {
             ArmamentPrefab current = GetArms(usedSlot);
-            if (current != null)
-            {
-                fighter.TryStopArms(current, out bool isProblem);
-                if (isProblem) return false;
-            }
+            if (current != null && IsUnequippable(current) == false)
+                return false;
         }
 
+        //finally, spawn/despawn prefab and update references
         ArmamentPrefab prefab = arms.SpawnPrefab(this, usedSlots, equipmentTransforms);
         foreach (Slot usedSlot in usedSlots)
         {
             UnequipArms(usedSlot);
             equippedArms[(int)usedSlot] = prefab;
+
+            OnEquipmentUpdate?.Invoke(usedSlot, prefab);
         }
+        
         return true;
     }
 
-    public bool UnequipArms(Slot fromSlot, bool act = true)
+    public bool UnequipArms(Slot fromSlot, int targetIndex = -1, bool discard = false)
     {
         ArmamentPrefab prefab = equippedArms[(int)fromSlot];
         if (prefab == null) return true;
 
-        fighter.TryStopArms(prefab, out bool isProblem);
-        if (isProblem) return false;
+        if (IsUnequippable(prefab) == false) return false;
 
-        if (act)
+        Armament arms = prefab.armsScriptable;
+        arms.DespawnPrefab(prefab);
+
+        foreach (Slot usedSlot in prefab.usedSlots)
         {
-            Armament arms = prefab.armsScriptable;
-            arms.DespawnPrefab(prefab);
+            equippedArms[(int)usedSlot] = null;
 
-            int setCount = equippedArmsCount[arms] - 1;
-            if (setCount <= 0)
-                equippedArmsCount.Remove(arms);
-            else
-                equippedArmsCount[arms]--;
+            OnEquipmentUpdate?.Invoke(usedSlot, null);
+        }
 
-            foreach (Slot usedSlot in prefab.usedSlots)
-                equippedArms[(int)usedSlot] = null;
+        if (discard) return true;
+
+        //add into inventory
+        if (AddItem(arms, 1, out int addedIndex))
+        {
+            if (targetIndex != -1 && 1 == inventory[addedIndex].count)
+                Reorder(addedIndex, targetIndex);
+        }
+        else
+        {
+            //drop onto the floor
         }
         return true;
-    }
-
-    public override bool RemoveItem(int index, int count, out int missingCount)
-    {
-        if(inventory.Count <= index)
-        {
-            missingCount = count;
-            return false;
-        }
-
-        InventoryEntry entry = inventory[index];
-        List<Slot> toUnequip = null;
-        int numberToUnequip;
-
-        if (entry.item is Armament arms &&
-            //get the number of this arms that are currently equipped
-            equippedArmsCount.TryGetValue(arms, out int equippedCount) &&
-            //how many do we have to unequip?
-            0 < (numberToUnequip = equippedCount + count - entry.count))
-        {
-            toUnequip = new List<Slot>();          
-
-            //check if we need to unequip any arms, do we have enough?
-            foreach (ArmamentPrefab armsPrefab in equippedArms)
-                if (armsPrefab != null &&
-                    armsPrefab.armsScriptable == arms)
-                {
-                    fighter.TryStopArms(armsPrefab, out bool isProblem);
-                    if (isProblem)
-                    {
-                        missingCount = 0;
-                        return false;
-                    }
-                    else
-                    {
-                        toUnequip.Add(armsPrefab.usedSlots[0]);
-                        numberToUnequip--;
-                        if (numberToUnequip == 0)
-                            break;
-                    }
-                }
-        }
-
-        bool baseResult = base.RemoveItem(index, count, out missingCount);
-
-        if (baseResult && toUnequip != null)
-            foreach (Slot slot in toUnequip)
-                //we just assume all these unequips have no problems
-                UnequipArms(slot);
-        
-        return baseResult;
     }
 
     /// <summary>
@@ -144,31 +98,43 @@ public class Equipment : Inventory
     /// </summary>
     public void AutoEquip()
     {
-        for(int i = 0; i < inventory.Count; i++)
-            while (EquipArms(i, Slot.ANY)) ;
+        for (int i = 0; i < inventory.Count; i++)
+        {
+            bool onlyEmpty;
+
+            do
+            {
+                if (inventory[i].item is Armament arms)
+                {
+                    arms.EquipRequirements(this, Slot.ANY, out _, out onlyEmpty);
+
+                    if (onlyEmpty)
+                        EquipArms(i, Slot.ANY);
+                }
+                else break;
+            }
+            while (onlyEmpty);
+        }
     }
 
     public ArmamentPrefab GetArms(Slot slot) => GetArms((int)slot);
 
-    public ArmamentPrefab GetArms(int index)
+    public ArmamentPrefab GetArms(int equipmentIndex)
     {
-        if (equippedArms.Length <= index)
+        if (equippedArms.array.Length <= equipmentIndex)
             return null;
         else
-            return equippedArms[index];
+            return equippedArms[equipmentIndex];
     }
 
-    protected override void Awake()
+    public bool IsUnequippable(ArmamentPrefab prefab)
     {
-        base.Awake();
+        fighter.TryStopArms(prefab, out bool isProblem);
+        return isProblem == false;
+    }
 
-        if (equippedArms == null || equippedArms.Length != (int)Slot.MAX)
-            equippedArms = new ArmamentPrefab[(int)Slot.MAX];
-        if(equipmentTransforms == null || equipmentTransforms.Length != (int)Slot.MAX)
-            equipmentTransforms = new Transform[(int)Slot.MAX];
-        if (equippedArmsCount == null)
-            equippedArmsCount = new Dictionary<Armament, int>((int)Slot.MAX);
-
+    protected virtual void Awake()
+    {
         fighter = characterComponents.fighter;
     }
 }

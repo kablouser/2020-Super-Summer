@@ -1,9 +1,10 @@
-#if UNITY_EDITOR
-
 using UnityEngine;
 using UnityEditor;
 
-public class ReadOnlyProperty : PropertyAttribute {}
+//needed when building (even if it serves no purpose)
+public class ReadOnlyProperty : PropertyAttribute { }
+
+#if UNITY_EDITOR
 
 [CustomPropertyDrawer(typeof(ReadOnlyProperty))]
 public class ReadOnlyDrawer : PropertyDrawer

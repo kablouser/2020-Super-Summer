@@ -1,0 +1,5 @@
+1 move  	= click&drag	= X(hold)
+2 back		= esc		= O
+3 auto equip	= shift&click	= ^
+4 inspect	= click		= X
+5 drop		= f		= []

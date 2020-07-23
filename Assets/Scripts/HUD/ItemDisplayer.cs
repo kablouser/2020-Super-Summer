@@ -6,28 +6,38 @@ using TMPro;
 
 using System.Collections;
 
+using static EventSystemModifier;
+
 public class ItemDisplayer : MonoBehaviour, 
     ISelectHandler, ISubmitHandler, IPointerClickHandler, 
-    IPointerEnterHandler, IDragHandler, ICancelHandler,
-    IEndDragHandler, IDeselectHandler, IMoveHandler
+    ICancelHandler, IBeginDragHandler, IScrollHandler,
+    IEndDragHandler, IMoveHandler,
+    ISpecialNavigation, IFirstOptionHandler, ISecondOptionHandler
 {
-    public EquipmentDisplayer master;
+    public InventoryPanel master;
 
-    public int inventoryIndex;
     public Image frameDisplay;
     public Image iconDisplay;
     public TextMeshProUGUI countDisplay;
-    public Selectable selectable;   
+    public Selectable selectable;
 
-    public RectTransform rectTransform { get; private set; }
+    public bool isInventory;
+    public int itemIndex;
+
+    public RectTransform RectTransform { get; private set; }
 
     private Coroutine bobbingRoutine;
 
     private void Awake()
     {
-        rectTransform = (RectTransform)transform;
+        RectTransform = (RectTransform)transform;
     }
-    
+
+    private void OnEnable()
+    {
+        frameDisplay.raycastTarget = iconDisplay.raycastTarget = true;
+    }
+
     private IEnumerator BobbingRoutine()
     {
         int increasingSize = 1;
@@ -36,11 +46,11 @@ public class ItemDisplayer : MonoBehaviour,
 
         do
         {
-            rectTransform.localScale += increasingSize * new Vector3(1, 1, 0) * Time.deltaTime * increaseSpeed;
+            RectTransform.localScale += increasingSize * new Vector3(1, 1, 0) * Time.deltaTime * increaseSpeed;
 
-            if (increasingSize == 1 && (1 + deltaSize) < rectTransform.localScale.x)
+            if (increasingSize == 1 && (1 + deltaSize) < RectTransform.localScale.x)
                 increasingSize = -1;
-            else if (increasingSize == -1 && rectTransform.localScale.x < (1 - deltaSize))
+            else if (increasingSize == -1 && RectTransform.localScale.x < (1 - deltaSize))
                 increasingSize = 1;
             
             yield return null;
@@ -85,51 +95,43 @@ public class ItemDisplayer : MonoBehaviour,
         else
         {
             frameDisplay.maskable = iconDisplay.maskable = true;
-            rectTransform.localScale = Vector3.one;
+            RectTransform.localScale = Vector3.one;
         }
     }
 
     //interfaces
+    //special navigation
+    public bool HasNavigation() => true;
 
     //selection
     public void OnSelect(BaseEventData eventData)
     {
-        master.FocusScroll(this);
-        master.SelectEntry(inventoryIndex);
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        master.SelectEntry(inventoryIndex);
+        master.SelectEntry(this);
     }
 
     //confirm button(s) - can either show controls or end dragging
     public void OnSubmit(BaseEventData eventData)
     {
-        master.DisplayerOnSubmit(this, false);
+        master.SubmitEntry(this, false);
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {        
         if (eventData.dragging == false &&
             eventData.button == PointerEventData.InputButton.Left)
-            master.DisplayerOnSubmit(this, true);
+            master.SubmitEntry(this, true);
     }
 
     //drag and dropping
-    public void OnDrag(PointerEventData eventData)
+    public void OnBeginDrag(PointerEventData eventData)
     {
-        master.BeginDrag(inventoryIndex, true);
+        frameDisplay.raycastTarget = iconDisplay.raycastTarget = false;
+        master.BeginDrag(this);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        master.EndDrag();
-    }
-
-    //deselect
-    public void OnDeselect(BaseEventData eventData)
-    {
+        frameDisplay.raycastTarget = iconDisplay.raycastTarget = true;
         master.EndDrag();
     }
 
@@ -141,5 +143,21 @@ public class ItemDisplayer : MonoBehaviour,
     public void OnCancel(BaseEventData eventData)
     {
         master.EndDrag();
+    }
+
+    public void OnScroll(PointerEventData eventData)
+    {
+        if(isInventory)
+            master.itemGridPanel.gridScrollRect.OnScroll(eventData);
+    }
+
+    public void OnFirstOption()
+    {
+        print("First Option");
+    }
+
+    public void OnSecondOption()
+    {
+        print("Second Option");
     }
 }

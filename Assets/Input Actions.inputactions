@@ -52,6 +52,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Interact",
+                    "type": "Button",
+                    "id": "6900ee68-dd56-4c08-848b-c2609a9b7adb",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -274,6 +282,28 @@
                     "action": "L2",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "04dc6a2c-65b8-4b99-a7f2-7fdfff5c8daa",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "21050c4e-8b4f-4dd8-b1be-be9f57e2cf5a",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -283,7 +313,7 @@
             "actions": [
                 {
                     "name": "Navigate",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "37ff3494-f681-4010-9dc4-8a9795d709fc",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -291,7 +321,7 @@
                 },
                 {
                     "name": "Submit",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "0d5fde78-00cf-450f-9ad0-6b6402d310af",
                     "expectedControlType": "Button",
                     "processors": "",
@@ -299,7 +329,7 @@
                 },
                 {
                     "name": "Cancel",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "a986cc30-ee9d-4429-ae4c-f56caea51944",
                     "expectedControlType": "Button",
                     "processors": "",
@@ -314,14 +344,6 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Click",
-                    "type": "PassThrough",
-                    "id": "285c26ee-e817-40d1-b5c3-fe9eca7d23d2",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "ScrollWheel",
                     "type": "PassThrough",
                     "id": "f25e8d71-be54-4d37-9e91-acafbe5c5046",
@@ -330,34 +352,26 @@
                     "interactions": ""
                 },
                 {
-                    "name": "MiddleClick",
+                    "name": "Click",
                     "type": "PassThrough",
-                    "id": "0a47ccc5-1615-4d32-a460-c89b378b0abb",
-                    "expectedControlType": "",
+                    "id": "285c26ee-e817-40d1-b5c3-fe9eca7d23d2",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 },
                 {
-                    "name": "RightClick",
-                    "type": "PassThrough",
-                    "id": "44ce4a60-075a-435f-a037-e5ecd0609e4d",
-                    "expectedControlType": "",
+                    "name": "FirstOption",
+                    "type": "Button",
+                    "id": "4c05b068-8b3e-4b3b-8b46-38116cc6cd85",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 },
                 {
-                    "name": "TrackedDevicePosition",
-                    "type": "PassThrough",
-                    "id": "34504aaa-0dca-4b19-9264-6da1020cf0f1",
-                    "expectedControlType": "Vector3",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
-                    "name": "TrackedDeviceOrientation",
-                    "type": "PassThrough",
-                    "id": "2b242dbd-44c8-4b47-89e5-2626923f1255",
-                    "expectedControlType": "Quaternion",
+                    "name": "SecondOption",
+                    "type": "Button",
+                    "id": "419e2295-edc1-4d31-a2fa-fb406633081c",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 }
@@ -475,6 +489,17 @@
                 },
                 {
                     "name": "",
+                    "id": "38c99815-14ea-4617-8627-164d27641299",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "ScrollWheel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "4faf7dc9-b979-4210-aa8c-e808e1ef89f5",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
@@ -497,36 +522,69 @@
                 },
                 {
                     "name": "",
-                    "id": "38c99815-14ea-4617-8627-164d27641299",
-                    "path": "<Mouse>/scroll",
+                    "id": "477309e4-d500-4414-ab9e-48602d84c3af",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "ScrollWheel",
+                    "groups": "Gamepad",
+                    "action": "FirstOption",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "24066f69-da47-44f3-a07e-0015fb02eb2e",
-                    "path": "<Mouse>/middleButton",
+                    "id": "ccfb4cc7-42ce-4700-ab74-84c74448e1f1",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "MiddleClick",
+                    "groups": "Keyboard&Mouse",
+                    "action": "FirstOption",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "4c191405-5738-4d4b-a523-c6a301dbf754",
-                    "path": "<Mouse>/rightButton",
+                    "id": "23518005-84aa-4465-adc3-900f2ce5d4f8",
+                    "path": "<Gamepad>/buttonNorth",
                     "interactions": "",
                     "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "RightClick",
+                    "groups": "Gamepad",
+                    "action": "SecondOption",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "Shift Click",
+                    "id": "78710da0-cf71-4d09-9b0f-4e2511c83064",
+                    "path": "ButtonWithOneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SecondOption",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Button",
+                    "id": "973e112f-4e3d-40e4-b218-377bd407f7e9",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "SecondOption",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Modifier",
+                    "id": "37b74a89-6f81-4ea2-be54-f3b52cda0dc8",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "SecondOption",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }
