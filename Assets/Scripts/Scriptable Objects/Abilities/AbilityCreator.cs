@@ -5,28 +5,6 @@ using static Fighter;
 
 public abstract class AbilityCreator : ScriptableObject
 {
-    [System.Serializable]
-    public class HoldMethodGroup<T>
-    {
-        public T leftHand;
-        public T rightHand;
-        public T bothHands;
-        public T GetHand(HoldMethod holdMethod)
-        {
-            switch(holdMethod)
-            {
-                case HoldMethod.leftHand:
-                    return leftHand;
-                case HoldMethod.rightHand:
-                    return rightHand;
-                case HoldMethod.bothHands:
-                    return bothHands;
-                default:
-                    return rightHand;
-            }
-        }
-    }
-
     public abstract class AbilityInstance
     {
         public CharacterComponents characterComponents;

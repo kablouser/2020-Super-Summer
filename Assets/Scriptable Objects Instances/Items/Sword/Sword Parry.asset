@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f1985c9a177d2408d307f1d53c377d, type: 3}
+  m_Name: Sword Parry
+  m_EditorClassIdentifier: 
+  abilityManual:
+    choiceWeighting: 0
+    engageRange: 1.8
+    holdDuration: 0.6
+    repeatable: 0
+  config:
+    blockAngle: 30
+    staminaCost: 15
+    damageReduction: 1
+    ricochet: 2
+    poise: 2
+    useEffect: {fileID: 11400000, guid: 552196df9e343cf49891de722391e238, type: 2}
+    parryTrigger: SwordParry

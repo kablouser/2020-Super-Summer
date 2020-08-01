@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,6 +18,14 @@ public class EnemyControl : MonoBehaviour
     }
 
     public const float navDistance = 10f;
+    /// <summary>
+    /// amount of extra time to calculate target's position
+    /// </summary>
+    public const float predictIntoFuture = 0.2f;
+    /// <summary>
+    /// multiplier that changes the desired range
+    /// </summary>
+    public const float rangeVariation = 0.15f;
 
     public bool IsNavigating => agent.stoppingDistance < agent.remainingDistance;
 
@@ -37,7 +46,7 @@ public class EnemyControl : MonoBehaviour
     //controls fields
     private float lookUp;
     [SerializeField]
-    private Fighter currentTarget;
+    private Fighter currentTarget = null;
 
     private bool currentTargetAlive => currentTarget != null && currentTarget.enabled;
 
@@ -144,28 +153,36 @@ public class EnemyControl : MonoBehaviour
             }
             while (randomDirection == rotateDirection);
             rotateDirection = randomDirection;
+
+            float rangeVariance = 1 + Random.Range(-rangeVariation, rangeVariation);
+
             //use the random ability within the recommended range
             do
             {
-                Vector3 targetPosition = currentTarget.transform.position;
+                Vector3 targetPosition = currentTarget.transform.position +
+                    currentTarget.characterComponents.rigidbodyComponent.velocity * predictIntoFuture;
+
                 Vector3 difference = transform.position - targetPosition;
 
                 Vector3 desiredDestination;
                 if (rotateDirection == 0)
-                    desiredDestination = targetPosition + difference.normalized * chosenAbility.engageRange;
+                    desiredDestination = targetPosition + difference.normalized * chosenAbility.engageRange * rangeVariance;
                 else
-                    desiredDestination = targetPosition + Quaternion.Euler(0, rotateDirection * 10f, 0) * difference.normalized * chosenAbility.engageRange;
+                    desiredDestination = targetPosition +
+                        Quaternion.Euler(0, rotateDirection * 10f, 0) * difference.normalized * chosenAbility.engageRange * rangeVariance;
 
                 agent.nextPosition = transform.position;
                 agent.destination = desiredDestination;
 
                 //look at target
-                Vector3 desiredVelocity = movement.model.InverseTransformDirection(agent.desiredVelocity);
+                Vector3 desiredVelocity = movement.bodyRotator.InverseTransformDirection(agent.desiredVelocity);
                 movement.SetLook(ref lookUp, Quaternion.LookRotation(-difference).eulerAngles.y);
                 movement.SetMove(desiredVelocity.x, desiredVelocity.z);
 
                 if (usedAbility == false &&
-                    difference.sqrMagnitude <= chosenAbility.engageRange * chosenAbility.engageRange &&
+                    difference.sqrMagnitude <=
+                    chosenAbility.engageRange * chosenAbility.engageRange *
+                    rangeVariance * rangeVariance &&
                     fighter.IsStaggered == false)
                 {
                     fighter.TryStopLastAbility(out bool isProblem);
@@ -176,7 +193,12 @@ public class EnemyControl : MonoBehaviour
 
                         if (chosenIndex != -1)
                         {
-                            fighter.UseAbility(chosenIndex, true, out bool useProblem);
+                            bool useProblem;
+                            if (Random.value < 0.5f)
+                                fighter.UseAbility(chosenIndex, true, out useProblem);
+                            else
+                                fighter.UseAbilityDontHold(chosenIndex, true, out useProblem);
+
                             if (useProblem)
                                 break;
                         }

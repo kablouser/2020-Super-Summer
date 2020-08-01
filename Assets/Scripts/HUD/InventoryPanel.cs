@@ -18,21 +18,9 @@ public class InventoryPanel : Panel
 
     [Header("Minor Panels")]
     public InformationPanel informationPanel;
-    public ItemControlPanel itemControlPanel;
-    public DropControlPanel dropControlPanel;
     [Header("Major Panels")]
     public EquipmentPanel equipmentPanel;
     public ItemGridPanel itemGridPanel;
-
-    private void Start()
-    {
-        Show();
-    }
-
-    public void Show()
-    {
-        base.Show(null);
-    }
 
     public void OnDisplayerMove(Vector2 navigation)
     {
@@ -41,16 +29,17 @@ public class InventoryPanel : Panel
 
     public void SelectEntry(ItemDisplayer displayer)
     {
-        var item = playerEquipment.inventory[displayer.itemIndex].item;
+        var item = displayer.isInventory ?
+            playerEquipment.inventory[displayer.itemIndex].item :
+            playerEquipment.GetArms(displayer.itemIndex).armsScriptable;
+
         informationPanel.SetItem(item);
         itemGridPanel.OnSelect(displayer);
     }
 
     public void SubmitEntry(ItemDisplayer displayer, bool isMouse)
     {
-        if (GetDragged == null)
-            ShowControls(displayer, isMouse);
-        else
+        if (GetDragged != null)
             EndDrag();
     }
 
@@ -60,7 +49,24 @@ public class InventoryPanel : Panel
             EndDrag(EndDragPosition.original);
 
         GetDragged = newDragged;
-        itemGridPanel.BeginDrag();
+
+        int startingIndex =
+            GetDragged.isInventory ?
+                GetDragged.itemIndex :
+                itemGridPanel.displayersGrid.transform.childCount;        
+
+        if (EventSystemModifier.Current.IsUsingMouse)
+        {
+            GetDragged.transform.SetParent(topLayer);
+        }
+        else
+        {
+            GetDragged.SetNavigation(false);
+            GetDragged.selectable.Select();
+            GetDragged.SetBobbing(true);
+        }
+
+        itemGridPanel.BeginDrag(startingIndex);
     }
 
     public void EndDrag(EndDragPosition endPosition = EndDragPosition.newPosition)
@@ -74,14 +80,28 @@ public class InventoryPanel : Panel
         itemGridPanel.EndDrag(copy, endPosition);
     }
 
-    public void ShowControls(ItemDisplayer displayer, bool isMouse)
+    public override void Hide()
     {
-        itemControlPanel.Show(
-            displayer,
-            new ItemControlPanel.ShowOptions()
-            {
-                showMove = true
-            });
+        base.Hide();
+        if(EventSystemModifier.Current.IsUsingMouse)
+            EventSystemModifier.Current.SetMouseVisible(false);
+    }
+
+    protected override void Show(RectTransform targetPosition)
+    {
+        base.Show(targetPosition);
+        if (EventSystemModifier.Current.IsUsingMouse)
+            EventSystemModifier.Current.SetMouseVisible(true);
+    }
+
+    private void OnEnable()
+    {
+        Show(null);
+    }
+
+    private void OnDisable()
+    {
+        Hide();
     }
 
     private void Update()

@@ -18,7 +18,7 @@ public abstract class Panel : MonoBehaviour
 
     protected virtual void Show(RectTransform targetPosition)
     {
-        EventSystemModifier.Instance.EnablePanel(this);
+        EventSystemModifier.Current.EnablePanel(this);
         if (hideNextFrameRoutine != null)
             StopCoroutine(hideNextFrameRoutine);
 
@@ -29,7 +29,7 @@ public abstract class Panel : MonoBehaviour
 
         gameObject.SetActive(true);
 
-        if (EventSystemModifier.Instance.IsUsingMouse == false)
+        if (EventSystemModifier.Current.IsUsingMouse == false)
         {
             var trySelect = SelectOnFocus;
             if(trySelect != null)
@@ -39,12 +39,12 @@ public abstract class Panel : MonoBehaviour
 
     public virtual void Hide()
     {
-        EventSystemModifier.Instance.DisablePanel(this);
+        EventSystemModifier.Current.DisablePanel(this);
         if (IsShown)
         {
             gameObject.SetActive(false);
 
-            if (EventSystemModifier.Instance.IsUsingMouse == false)
+            if (EventSystemModifier.Current.IsUsingMouse == false)
             {
                 var trySelect = SelectOnDefocus;
                 if (trySelect != null)

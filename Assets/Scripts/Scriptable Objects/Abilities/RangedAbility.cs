@@ -21,11 +21,6 @@ public class RangedAbility : AbilityCreator
         public float cooldown;
     }
 
-    //This lets the inspector see the meleeConfigs fields (because unity cannot serialize generic classes)
-    //but alpha version fixes this problem
-    [System.Serializable]
-    public class ConfigWrapper : HoldMethodGroup<RangedConfig> { }
-
     public interface IRanged
     {
         Transform GetSpawnPoint { get; }
@@ -47,7 +42,7 @@ public class RangedAbility : AbilityCreator
             CharacterComponents characterComponents) :
             base(characterComponents, ability)
         {
-            config = ability.rangedConfigs.GetHand(rangedInterface.GetHoldMethod);
+            config = ability.rangedConfig;
             lastUse = Mathf.NegativeInfinity;
             spawnPoint = rangedInterface.GetSpawnPoint;
             projectile = ability.projectile;
@@ -115,7 +110,7 @@ public class RangedAbility : AbilityCreator
     }
 
     public Projectile projectile;
-    public ConfigWrapper rangedConfigs;    
+    public RangedConfig rangedConfig;    
 
     public override AbilityInstance CreateAbility(
         object interfaceObject,
@@ -125,11 +120,5 @@ public class RangedAbility : AbilityCreator
             return new RangedInstance(rangedInterface, this, characterComponents);
         else
             return null;
-    }
-
-    [ContextMenu("Copy Left Hand Configs")]
-    public void CopyLeftHandConfigs()
-    {
-        rangedConfigs.bothHands = rangedConfigs.rightHand = rangedConfigs.leftHand;
     }
 }

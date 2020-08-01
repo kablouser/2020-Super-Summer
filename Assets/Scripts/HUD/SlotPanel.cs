@@ -31,7 +31,7 @@ public class SlotPanel : MonoBehaviour, IDropHandler
                         return;
 
                 prefab.armsScriptable.EquipRequirements(equipment, slot, out _, out bool onlyEmpty);
-                if (onlyEmpty && equipment.IsUnequippable(prefab))
+                if (onlyEmpty && equipment.CanUnequip())
                 {
                     ArmamentPrefab previous = equipment.GetArms(slot);
                     bool hasPrevious = previous != null;

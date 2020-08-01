@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using static Fighter;
+using static CharacterSheet;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -29,12 +31,18 @@ public class PlayerControl : MonoBehaviour
 
     public PlayerComponents playerComponents;
     public InteractionPanel interactionPanel;
+    public GameObject EscapePanel;
     public LayerMask interactionMask;
+
+    public Slider healthBar;
+    public Slider staminaBar;
+    public Slider focusBar;
 
     private Movement movement;
     private Equipment equipment;
     private Fighter fighter;
     private PlayerInput playerInput;
+    private CharacterSheet characterSheet;
     
     private Vector2 currentLook;
     private Vector2 inputLook;
@@ -71,7 +79,7 @@ public class PlayerControl : MonoBehaviour
         ProcessHandInput(AbilityIndex.R1, context.phase);
     }
     public void Interact(InputAction.CallbackContext context)
-    {
+    {        
         if (context.phase != InputActionPhase.Performed)
             return;
 
@@ -88,11 +96,18 @@ public class PlayerControl : MonoBehaviour
                 return;
 
             //add other sorts of interactions here ...
-        }        
+        }
+    }
+    public void Menu(InputAction.CallbackContext context)
+    {
+        if (context.phase != InputActionPhase.Performed)
+            return;
+
+        EscapePanel.SetActive(!EscapePanel.activeSelf);
     }
     private void ProcessHandInput(AbilityIndex index, InputActionPhase phase)
     {
-        if(downAction.isNew && index < downAction.index)
+        if (downAction.isNew && index < downAction.index)
             return;
 
         if (phase == InputActionPhase.Started)
@@ -106,10 +121,11 @@ public class PlayerControl : MonoBehaviour
         equipment = playerComponents.equipment;
         fighter = playerComponents.fighter;
         playerInput = playerComponents.playerInput;
+        characterSheet = playerComponents.characterSheet;        
     }
     private void Start()
     {
-        //equipment.AutoEquip();
+        equipment.AutoEquip();
     }
     private void OnEnable()
     {
@@ -119,6 +135,8 @@ public class PlayerControl : MonoBehaviour
     {
         movement.SetMove(0, 0);
         playerInput.enabled = false;
+        //make sure resource bars are correct when killed
+        UpdateResourceBars();
     }
     private void Update()
     {
@@ -133,6 +151,9 @@ public class PlayerControl : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        //update resource bars
+        UpdateResourceBars();
+
         if (Physics.Raycast(movement.head.position, movement.head.forward,
             out RaycastHit hitInfo, InteractionRange, interactionMask) == false)
         {
@@ -159,4 +180,19 @@ public class PlayerControl : MonoBehaviour
 
     private bool HasCacheChanged(InteractCache newCache) =>
         newCache.type != interactCache.type || newCache.interactObject != interactCache.interactObject;
+
+    private void UpdateResourceBars()
+    {
+        float barFill = characterSheet.GetResource(Resource.health) / (float)characterSheet.GetResourceMax(Resource.health);
+        if (healthBar.value != barFill)
+            healthBar.value = barFill;
+
+        barFill = characterSheet.GetResource(Resource.stamina) / (float)characterSheet.GetResourceMax(Resource.stamina);
+        if (staminaBar.value != barFill)
+            staminaBar.value = barFill;
+
+        barFill = characterSheet.GetResource(Resource.focus) / (float)characterSheet.GetResourceMax(Resource.focus);
+        if (focusBar.value != barFill)
+            focusBar.value = barFill;
+    }
 }

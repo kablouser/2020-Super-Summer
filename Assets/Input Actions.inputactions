@@ -27,7 +27,7 @@
                     "id": "35fc630e-8215-46f7-a323-1227987281b8",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "Hold(duration=0.2)"
                 },
                 {
                     "name": "L2",
@@ -35,7 +35,7 @@
                     "id": "17e2e210-3471-40c9-bddb-ae9439f334e9",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "Hold(duration=0.2)"
                 },
                 {
                     "name": "R1",
@@ -43,7 +43,7 @@
                     "id": "cfeafaf5-82a0-47d6-8178-5fd471195ea7",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "Hold(duration=0.2)"
                 },
                 {
                     "name": "L1",
@@ -51,12 +51,20 @@
                     "id": "49b98eb0-e7a7-451b-856e-07cad2300ef8",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "Hold(duration=0.2)"
                 },
                 {
                     "name": "Interact",
                     "type": "Button",
                     "id": "6900ee68-dd56-4c08-848b-c2609a9b7adb",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Menu",
+                    "type": "Button",
+                    "id": "93f4ef7f-3cf6-4182-90ed-7a01144699c7",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -304,6 +312,39 @@
                     "action": "Interact",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cf7b04b1-2d9f-411e-855e-f97d96064441",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6d5097b8-2764-4089-b183-dc53f9dc34f4",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6aefc237-b591-43ac-92d4-515f952e7d0f",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -329,7 +370,7 @@
                 },
                 {
                     "name": "Cancel",
-                    "type": "PassThrough",
+                    "type": "Button",
                     "id": "a986cc30-ee9d-4429-ae4c-f56caea51944",
                     "expectedControlType": "Button",
                     "processors": "",
@@ -534,7 +575,7 @@
                 {
                     "name": "",
                     "id": "ccfb4cc7-42ce-4700-ab74-84c74448e1f1",
-                    "path": "<Keyboard>/f",
+                    "path": "<Keyboard>/g",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",

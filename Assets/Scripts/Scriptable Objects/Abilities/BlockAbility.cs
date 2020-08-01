@@ -19,11 +19,6 @@ public class BlockAbility : AbilityCreator
         public string toggle;
     }
 
-    //This lets the inspector see the meleeConfigs fields (because unity cannot serialize generic classes)
-    //but alpha version fixes this problem
-    [System.Serializable]
-    public class ConfigWrapper : HoldMethodGroup<BlockConfig> { }
-
     public interface IBlock
     {
         AttackIndictator GetAttackIndicator { get; }
@@ -38,7 +33,7 @@ public class BlockAbility : AbilityCreator
         private bool isUsing;
         private Coroutine routine;
         private StatusEffect drainEffect;
-        
+
         public BlockInstance(
             IBlock blockInterface,
             BlockAbility ability,
@@ -47,7 +42,7 @@ public class BlockAbility : AbilityCreator
         {
             attackIndicator = blockInterface.GetAttackIndicator;
             blockAngle = ability.blockAngle;
-            config = ability.blockConfigs.GetHand(blockInterface.GetHoldMethod);
+            config = ability.blockConfig;
             drainEffect = config.useEffect.FindAtomic<StatusEffect>();
         }
 
@@ -78,20 +73,12 @@ public class BlockAbility : AbilityCreator
             }
             else if (phase == InputPhase.up)
             {
-                characterComponents.animator.SetBool(config.toggle, false);
-                characterComponents.characterSheet.RemoveEffect(config.useEffect);
-                characterComponents.characterSheet.RemoveAttackListener(this);
-
-                attackIndicator.SetBlockIndicator(false);
-                isUsing = false;
-
-                if(routine != null)
-                    characterComponents.fighter.StopCoroutine(routine);
+                EndUse(false);
             }
         }
 
         public override void TryEndUse(out bool isProblem)
-        {            
+        {
             if (CanUse(InputPhase.up))
                 Use(InputPhase.up);
 
@@ -100,7 +87,8 @@ public class BlockAbility : AbilityCreator
 
         public override void ForceEndUse()
         {
-            TryEndUse(out _);
+            if(isUsing)
+                EndUse(true);
         }
 
         public override bool HasEnded()
@@ -112,17 +100,17 @@ public class BlockAbility : AbilityCreator
             out int ricochet, out int reduction, out int poise, out bool canRicochet)
         {
             Movement movement = characterComponents.movement;
-            Transform modelCenter = movement.modelCenter;
-            Vector3 contactDirection = contactPoint - modelCenter.position;
-            attackIndicator.SetLastHit(contactDirection.normalized);
-
+            Vector3 contactDirection = contactPoint - attackIndicator.transform.position;
+            
             if (isUsing)
             {
-                Transform model = movement.model;
+                Transform model = movement.bodyRotator;
                 float angle = Vector3.Angle(contactDirection, model.forward);
 
                 if (angle <= blockAngle)
                 {
+                    attackIndicator.SetLastHit(contactDirection.normalized, true);
+
                     reduction = Mathf.RoundToInt(damage * config.damageReduction);
                     ricochet = config.ricochet;
                     poise = config.poise;
@@ -132,6 +120,8 @@ public class BlockAbility : AbilityCreator
             }
             ricochet = reduction = poise = 0;
             canRicochet = false;
+
+            attackIndicator.SetLastHit(contactDirection.normalized, false);
         }
 
         private IEnumerator BlockRoutine()
@@ -155,10 +145,27 @@ public class BlockAbility : AbilityCreator
             else
                 return drainEffect.IsResourcesDrained(characterComponents.characterSheet);
         }
+
+        private void EndUse(bool fade)
+        {
+            characterComponents.animator.SetBool(config.toggle, false);
+            characterComponents.characterSheet.RemoveEffect(config.useEffect);
+            characterComponents.characterSheet.RemoveAttackListener(this);
+
+            if (fade)
+                attackIndicator.FadeOutBlockIndicator();
+            else
+                attackIndicator.SetBlockIndicator(false);
+            isUsing = false;
+
+            if (routine != null)
+                characterComponents.fighter.StopCoroutine(routine);
+        }
     }
 
+
     public float blockAngle;
-    public ConfigWrapper blockConfigs;
+    public BlockConfig blockConfig;
 
     public override AbilityInstance CreateAbility(
         object interfaceObject, 
@@ -169,9 +176,4 @@ public class BlockAbility : AbilityCreator
         else
             return null;
     }
-
-    [ContextMenu("Copy Left Hand Configs")] public void CopyLeftHandConfigs()
-    {
-        blockConfigs.bothHands = blockConfigs.rightHand = blockConfigs.leftHand;
-    }    
 }

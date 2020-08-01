@@ -43,6 +43,9 @@ public class EquipmentPanel : MonoBehaviour
         playerEquipment.OnEquipmentUpdate -= OnEquipmentUpdate;
     }
 
+    //only run checks on editor
+#if UNITY_EDITOR
+
     private void Update()
     {
         //checks for correction
@@ -95,6 +98,8 @@ public class EquipmentPanel : MonoBehaviour
             }
         }
     }
+
+#endif
 
     private void OnEquipmentUpdate(Armament.Slot slot, ArmamentPrefab prefab)
     {

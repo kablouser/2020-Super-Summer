@@ -59,6 +59,12 @@ public class EventSystemModifier : Singleton<EventSystemModifier>
     public void DisablePanel(Panel panel) =>
         panels.Remove(panel);
 
+    public void SetMouseVisible(bool isVisible)
+    {
+        Cursor.visible = isVisible;
+        Cursor.lockState = isVisible ? CursorLockMode.None : CursorLockMode.Locked;
+    }
+
     private void OnEnable()
     {
         UpdateDevice(playerInput.devices[0]);
@@ -175,7 +181,6 @@ public class EventSystemModifier : Singleton<EventSystemModifier>
 
     private void OnSecondOption(InputAction.CallbackContext context)
     {
-        Debug.Log(string.Format("{0} {1} {2}", context.phase, context.ReadValueAsButton(), context.canceled));
         if (context.performed)
         {
             GameObject selected = EventSystem.current.currentSelectedGameObject;
@@ -190,17 +195,14 @@ public class EventSystemModifier : Singleton<EventSystemModifier>
 
     private void UpdateDevice(InputDevice device)
     {
-        SetMouse(device is Mouse || device is Keyboard);
+        SetIsMouseUsing(device is Mouse || device is Keyboard);
     }
 
-    private void SetMouse(bool isUsing)
+    private void SetIsMouseUsing(bool isUsing)
     {
-        IsUsingMouse = isUsing; 
+        IsUsingMouse = isUsing;
 
-        Cursor.visible = isUsing;
-        Cursor.lockState = isUsing ? CursorLockMode.None : CursorLockMode.Confined;
-
-        if(isUsing)
+        if (isUsing)
         {
             //update our mouse's position
         }
@@ -210,6 +212,8 @@ public class EventSystemModifier : Singleton<EventSystemModifier>
             Hovered = GetHovered();
             Unhover();
         }
+
+        SetMouseVisible(isUsing);
     }
 
     private Selectable GetHovered()

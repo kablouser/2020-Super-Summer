@@ -18,6 +18,8 @@ public class DroppedItem : MonoBehaviour
     [SerializeField]    
     private InventoryEntry itemData;
 
+    private bool consumed = false;
+
     public void SetItem(InventoryEntry data)
     {
         itemData = data;
@@ -52,5 +54,28 @@ public class DroppedItem : MonoBehaviour
     private void FixedUpdate()
     {
         displayRotator.transform.forward = cameraTransform.forward;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (consumed) return;
+
+        GameObject otherObject = collision.gameObject;
+        DroppedItem otherItem = otherObject.GetComponent<DroppedItem>();
+        if(otherItem != null && itemData.item == otherItem.itemData.item)
+        {
+            //choose lowest velocity
+            Rigidbody rigidbody = GetComponent<Rigidbody>();
+            Vector3 myVelocity = rigidbody.velocity;
+            Vector3 otherVelocity = collision.rigidbody.velocity;
+            if (otherVelocity.sqrMagnitude < myVelocity.sqrMagnitude)
+                rigidbody.velocity = otherVelocity;
+
+            //consume its count and destroy other            
+            itemData.count += otherItem.itemData.count;
+            otherItem.consumed = true;
+            UpdateVisuals();
+            Destroy(otherObject);
+        }
     }
 }

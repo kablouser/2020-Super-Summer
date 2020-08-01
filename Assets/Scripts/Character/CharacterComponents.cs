@@ -12,4 +12,5 @@ public class CharacterComponents : MonoBehaviour
      */
     public Fighter fighter;
     public Animator animator;
+    public AnimationEventListener animationEventListener;
 }

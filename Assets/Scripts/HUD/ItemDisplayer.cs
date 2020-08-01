@@ -153,11 +153,23 @@ public class ItemDisplayer : MonoBehaviour,
 
     public void OnFirstOption()
     {
-        print("First Option");
+        //drop
+
+        var equipment = master.playerEquipment;
+        if(isInventory)
+            equipment.RemoveItem(itemIndex, 1, out _);
+        else
+            equipment.UnequipArms((Armament.Slot)itemIndex, -1, false, true);
     }
 
     public void OnSecondOption()
     {
-        print("Second Option");
+        //auto equip/deequip/move into other inventory
+
+        var equipment = master.playerEquipment;
+        if(isInventory)
+            equipment.EquipArms(itemIndex, Armament.Slot.ANY);
+        else
+            equipment.UnequipArms((Armament.Slot)itemIndex);
     }
 }

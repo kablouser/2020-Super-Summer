@@ -1,9 +1,11 @@
+MMO with Souls-like depth of combat
+
 Progression :
 	no player levels - not needed
 	new spells that do new things - but not neccessarily higher damage
 	encourage players to use new weapons/spells
 	keep everything viable throughout the game
-	enchant weapons/armours to upgrade them with new effects
+	enchant weapons/armours to upgrade them with new effects (hypixel enchantment)
 
 Western RPG essential :
 	expression of self

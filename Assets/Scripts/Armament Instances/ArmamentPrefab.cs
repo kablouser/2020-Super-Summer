@@ -2,8 +2,9 @@
 
 using static Armament;
 using static AbilityCreator;
+using static Fighter;
 
-public class ArmamentPrefab : MonoBehaviour
+public class ArmamentPrefab : MonoBehaviour, IAbilityMirror
 {
     // these are all assigned during SpawnPrefab in Armament
     public CharacterComponents characterComponents;
@@ -20,12 +21,29 @@ public class ArmamentPrefab : MonoBehaviour
     public AbilityCreator[] abilitySet = new AbilityCreator[4];
     private AbilityInstance[] abilityInstances;
 
+    public bool DoMirror => holdMethod == HoldMethod.rightHand;
+
     public virtual void AfterSpawn()
     {
-        abilityInstances = new AbilityInstance[abilitySet.Length];
-        for (int i = 0; i < abilitySet.Length; i++)
-            if(abilitySet[i] != null)
-                abilityInstances[i] = abilitySet[i].CreateAbility(this, characterComponents);
+        abilityInstances = new AbilityInstance[4];
+
+        if (holdMethod == HoldMethod.leftHand)
+        {
+            abilityInstances[0] = abilitySet[0].CreateAbility(this, characterComponents);
+            abilityInstances[1] = abilitySet[1].CreateAbility(this, characterComponents);
+        }
+        else if (holdMethod == HoldMethod.rightHand)
+        {
+            abilityInstances[2] = abilitySet[2].CreateAbility(this, characterComponents);
+            abilityInstances[3] = abilitySet[3].CreateAbility(this, characterComponents);
+        }
+        else if (holdMethod == HoldMethod.bothHands)
+        {
+            abilityInstances[0] = abilitySet[0].CreateAbility(this, characterComponents);
+            abilityInstances[1] = abilitySet[1].CreateAbility(this, characterComponents);
+            abilityInstances[2] = abilitySet[2].CreateAbility(this, characterComponents);
+            abilityInstances[3] = abilitySet[3].CreateAbility(this, characterComponents);
+        }
     }
 
     public virtual void MapAbilitySet()
@@ -81,8 +99,8 @@ public class ArmamentPrefab : MonoBehaviour
         transform.localPosition = Vector3.zero;
 
         if (flipOnLeftHand && holdMethod == HoldMethod.leftHand)
-            transform.localRotation = Quaternion.Euler(0, 180, 0);
+            transform.localRotation = Quaternion.Euler(-90, 180, 180);
         else
-            transform.localRotation = Quaternion.identity;
+            transform.localRotation = Quaternion.Euler(-90, 0, 180);
     }
 }

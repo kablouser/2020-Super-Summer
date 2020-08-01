@@ -143,25 +143,18 @@ public class ItemGridPanel : MonoBehaviour
         }
     }
 
-    public void BeginDrag()
+    public void BeginDrag(int startingIndex)
     {
-        draggedMouse = EventSystemModifier.Instance.IsUsingMouse;
+        draggedMouse = EventSystemModifier.Current.IsUsingMouse;
         draggedInside = master.GetDragged.isInventory;
 
         if (draggedMouse)
         {
-            master.GetDragged.transform.SetParent(master.topLayer);
             emptyPlaceholder.SetParent(displayersGrid.transform);
-            emptyPlaceholder.SetSiblingIndex(master.GetDragged.itemIndex);
-        }
-        else
-        {
-            master.GetDragged.SetNavigation(false);
-            master.GetDragged.selectable.Select();
-            master.GetDragged.SetBobbing(true);
+            emptyPlaceholder.SetSiblingIndex(startingIndex);
         }
 
-        draggedSiblingIndex = master.GetDragged.itemIndex;
+        draggedSiblingIndex = startingIndex;
     }
 
     public void EndDrag(ItemDisplayer draggedCopy, EndDragPosition endPosition)
@@ -187,14 +180,11 @@ public class ItemGridPanel : MonoBehaviour
             if (draggedCopy.isInventory)
                 //this will induce further callbacks which corrects the dragged sibling index
                 equipment.Reorder(draggedCopy.itemIndex, draggedSiblingIndex);
-            else
-            {
-                if(draggedInside)
+            else if ((draggedInside &&
                     //this will induce further callbacks which corrects the position
-                    equipment.UnequipArms((Armament.Slot)draggedCopy.itemIndex, draggedSiblingIndex);
-                else
-                    master.equipmentPanel.ResetPosition((Armament.Slot)draggedCopy.itemIndex);
-            }
+                    equipment.UnequipArms((Armament.Slot)draggedCopy.itemIndex, draggedSiblingIndex)) 
+                    == false)
+                master.equipmentPanel.ResetPosition((Armament.Slot)draggedCopy.itemIndex);
         }
         else if (endPosition == EndDragPosition.original)
         {
@@ -246,7 +236,7 @@ public class ItemGridPanel : MonoBehaviour
 
     public void OnSelect(ItemDisplayer displayer)
     {   
-        if(displayer.isInventory)
+        if(displayer.isInventory && EventSystemModifier.Current.IsUsingMouse == false)
             FocusScroll(displayers[displayer.itemIndex]);
     }
 
@@ -288,10 +278,12 @@ public class ItemGridPanel : MonoBehaviour
         master.playerEquipment.OnInventoryReorder -= ReorderEntry;
     }
 
+#if UNITY_EDITOR
     private void Update()
     {
         ValidEntries();
     }
+#endif
 
     private void InsertEntry(int index, InventoryEntry entry)
     {
@@ -349,6 +341,7 @@ public class ItemGridPanel : MonoBehaviour
             displayers[i].itemIndex = i;
     }
 
+#if UNITY_EDITOR
     private void ValidEntries()
     {
         var inventory = master.playerEquipment.inventory;
@@ -393,6 +386,7 @@ public class ItemGridPanel : MonoBehaviour
             }
         }
     }
+#endif
 
     private static int GetIndexPosition(float paddingStart, float cellSize, float spacing, float totalLength, float point, out int max)
     {

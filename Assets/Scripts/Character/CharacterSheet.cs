@@ -75,10 +75,12 @@ public class CharacterSheet : MonoBehaviour
     public void LandAttack(int damage, Vector3 contactPoint, int heft, out int ricochet)
     {
         ricochet = 0;
+        if (enabled == false) return;
+
         int reduction = 0;
         int poise = 0; //we can use a base poise attribute
         bool canRicochet = false;
-        
+
         foreach (var listener in attackListeners)
         {
             listener.OnAttacked(damage, contactPoint,
@@ -95,15 +97,11 @@ public class CharacterSheet : MonoBehaviour
         if (poise < heft)
         {
             if (canRicochet)
-            {
-                bool ricocheted = fighter.RicochetStagger();
-                if (0 < damage)
-                    fighter.DamagedStagger(!ricocheted);
-            }
+                fighter.RicochetStagger();
             else if (0 < damage)
                 fighter.DamagedStagger();
         }
-        if(0 < damage)
+        if (0 < damage)
             IncreaseResource(Resource.health, -damage);
     }
     public int GetAttribute(Attribute attribute) => attributes[(int)attribute].current + attributes[(int)attribute].additional;
@@ -210,7 +208,7 @@ public class CharacterSheet : MonoBehaviour
         if (attackListeners.Contains(listener) == false)
             attackListeners.Add(listener);
         else
-            Debug.LogError("listener is already listenning", this);
+            Debug.LogError("listener is already listenning", listener as Object);
     }
 
     public void RemoveAttackListener(IAttackListener listener)

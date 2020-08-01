@@ -1,11 +1,16 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 using static Armament;
 using static AbilityCreator;
 
 public class Fighter : MonoBehaviour
 {
+    public interface IAbilityMirror
+    {
+        bool DoMirror { get; }
+    }
     [System.Serializable]
     public struct AbilityContainer
     {
@@ -24,21 +29,14 @@ public class Fighter : MonoBehaviour
     public enum InputPhase { down, hold, up }
     public enum AbilityIndex { L1, L2, R1, R2 }
 
-    public static readonly WaitForSeconds staggerWait = new WaitForSeconds(staggerDuration);
-
-    public const float staggerDuration = 1.0f;
+    public static readonly WaitForSeconds staggerWait = new WaitForSeconds(1.0f);
+    public static readonly WaitForSeconds ricochetWait = new WaitForSeconds(1.5f);
+    public static readonly WaitForSeconds holdWait = new WaitForSeconds(holdDuration);
 
     public const float basePoise = 1.0f;
     public const float poiseGrowth = 1.0f;
     public const float poiseReset = 0.5f;
-    public const string damagedStaggerTrigger = "Damaged Stagger";
-
-    public const string leftHandIdle = "Left Hand Idle";
-    public const string rightHandIdle = "Right Hand Idle";
-
-    public const string leftRicochet = "Left Ricochet";
-    public const string rightRicochet = "Right Ricochet";
-    public const string bothRicochet = "Both Ricochet";
+    public const float holdDuration = 0.2f;
 
     public bool IsStaggered { get; private set; }
 
@@ -54,7 +52,7 @@ public class Fighter : MonoBehaviour
     public AbilityContainer[] currentAbilities;
 
     [SerializeField]
-    private DefaultAbility[] defaultAbilities;
+    private DefaultAbility[] defaultAbilities = null;
 
     private Coroutine staggerRoutine;
     private bool isPoised;    
@@ -65,19 +63,45 @@ public class Fighter : MonoBehaviour
     private CharacterSheet characterSheet;
     private Animator animator;
 
-    //abilities that have the button held down
-    private bool[] heldDown;
+    //the input phases for each ability
+    private InputPhase[] abilityInputs;
+    private Coroutine[] switchToHoldRoutine;
 
     private int lastAbilityIndex = -1;
     private AbilityContainer lastAbility;
 
-    public void UseAbility(AbilityIndex index, bool buttonDown, out bool isProblem) =>
-        UseAbility((int)index, buttonDown, out isProblem);
+    public void UseAbility(AbilityIndex index, bool isDown, out bool isProblem) =>
+        UseAbility((int)index, isDown, out isProblem);
 
-    public void UseAbility(int index, bool buttonDown, out bool isProblem)
+    public void UseAbility(int index, bool isDown, out bool isProblem)
     {
-        heldDown[index] = buttonDown;
-        TriggerAbility(index, buttonDown ? InputPhase.down : InputPhase.up, out isProblem);
+        if (isDown)
+        {
+            if (abilityInputs[index] != InputPhase.hold)
+            {
+                //switch to hold after delay
+                if (switchToHoldRoutine[index] != null)
+                    StopCoroutine(switchToHoldRoutine[index]);
+                switchToHoldRoutine[index] = StartCoroutine(SwitchToHoldRoutine(index));
+            }
+        }
+        //stop switching to hold
+        else if (switchToHoldRoutine[index] != null)
+            StopCoroutine(switchToHoldRoutine[index]);
+        
+        abilityInputs[index] = isDown ? InputPhase.down : InputPhase.up;
+        TriggerAbility(index, abilityInputs[index], out isProblem);
+    }
+
+    ///<summary>will not switch to hold</summary>
+    public void UseAbilityDontHold(int index, bool isDown, out bool isProblem)
+    {
+        //stop switching to hold
+        if (!isDown && switchToHoldRoutine[index] != null)
+            StopCoroutine(switchToHoldRoutine[index]);
+
+        abilityInputs[index] = isDown ? InputPhase.down : InputPhase.up;
+        TriggerAbility(index, abilityInputs[index], out isProblem);
     }
 
     public void TryStopArms(ArmamentPrefab prefab, out bool isProblem)
@@ -118,23 +142,19 @@ public class Fighter : MonoBehaviour
            lastAbility.interfaceObject is ArmamentPrefab prefab &&
            prefab.holdMethod != HoldMethod.none)
         {
-            if (prefab.holdMethod == HoldMethod.leftHand)
-                StartStagger(leftRicochet);
-            else if (prefab.holdMethod == HoldMethod.rightHand)
-                StartStagger(rightRicochet);
-            else
-                StartStagger(bothRicochet);
+            StartStagger(AnimationConstants.Ricochet, ricochetWait);
+            //if(prefab.holdMethod == HoldMethod.bothHands)
+            //  use a different animation
             return true;
         }
         else return false;
     }
 
-    public void DamagedStagger(bool doAnimation = true)
+    public void DamagedStagger()
     {
         if (isPoised == false)
         {
-            if(doAnimation)
-                StartStagger(damagedStaggerTrigger);
+            StartStagger(AnimationConstants.Hurt, staggerWait);
 
             if (poiseRoutine != null)
                 StopCoroutine(poiseRoutine);
@@ -199,6 +219,10 @@ public class Fighter : MonoBehaviour
             lastAbilityIndex = index;
             lastAbility = selectedContainer;
 
+            animator.SetBool(AnimationConstants.Mirror,
+                selectedContainer.interfaceObject is IAbilityMirror abilityMirror &&
+                abilityMirror.DoMirror);
+
             selectedContainer.ability.Use(phase);
             isProblem = false;
         }
@@ -206,22 +230,22 @@ public class Fighter : MonoBehaviour
             isProblem = true;
     }
 
-    private void StartStagger(string trigger)
+    private void StartStagger(int triggerId, WaitForSeconds stunDuration)
     {
         if (staggerRoutine != null)
             StopCoroutine(staggerRoutine);
-        staggerRoutine = StartCoroutine(StaggerRoutine(trigger));
+        staggerRoutine = StartCoroutine(StaggerRoutine(triggerId, stunDuration));
     }
 
-    private IEnumerator StaggerRoutine(string trigger)
+    private IEnumerator StaggerRoutine(int triggerId, WaitForSeconds stunDuration)
     {
         if (lastAbility.ability != null)
             lastAbility.ability.ForceEndUse();
 
-        animator.SetTrigger(trigger);
+        animator.SetTrigger(triggerId);
         characterSheet.AddEffect(staggerEffect);
         IsStaggered = true;
-        yield return staggerWait;
+        yield return stunDuration;
 
         IsStaggered = false;
     }
@@ -247,6 +271,12 @@ public class Fighter : MonoBehaviour
         isPoiseResetted = true;
     }
 
+    private IEnumerator SwitchToHoldRoutine(int index)
+    {
+        yield return holdWait;
+        abilityInputs[index] = InputPhase.hold;
+    }
+
     private void Awake()
     {
         characterSheet = characterComponents.characterSheet;
@@ -266,7 +296,8 @@ public class Fighter : MonoBehaviour
             currentAbilities[i].interfaceObject = defaultAbilities[i].interfaceObject;
         }
 
-        heldDown = new bool[abilitiesLength];
+        abilityInputs = new InputPhase[abilitiesLength];
+        switchToHoldRoutine = new Coroutine[abilitiesLength];
     }
 
     private void OnDisable()
@@ -277,8 +308,8 @@ public class Fighter : MonoBehaviour
 
     private void FixedUpdate()
     {
-        for (int i = 0; i < heldDown.Length; i++)
-            if (heldDown[i])
+        for (int i = 0; i < abilityInputs.Length; i++)
+            if (abilityInputs[i] == InputPhase.hold)
                 TriggerAbility(i, InputPhase.hold, out _);
     }
 }
