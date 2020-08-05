@@ -8,5 +8,5 @@ public class Item : ScriptableObject
     public int volume;
     public Sprite icon;
     [TextArea(1,5)]
-    public string description;    
+    public string description;
 }

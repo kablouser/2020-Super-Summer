@@ -1,0 +1,378 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1177590860201804096
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5942667380979319703}
+  - component: {fileID: 8704674179787481108}
+  m_Layer: 9
+  m_Name: Sword Attack 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5942667380979319703
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177590860201804096}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2310126132781421446}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8704674179787481108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177590860201804096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ee66a251a8821243bb8247615e13f71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  abilityManual:
+    choiceWeighting: 1
+    engageRange: 1.8
+    holdDuration: 2
+    repeatable: 1
+  holdToChain: {fileID: 0}
+  damage:
+    baseValue: 13
+    damageType: 0
+  cost:
+    health: 0
+    stamina: 7
+    focus: 0
+  heft: 1
+  useEffect: {fileID: 11400000, guid: 0bc213a152fcbdd47a5ec13b730e438f, type: 2}
+  attackTrigger: 1
+  damageBoxes:
+  - {fileID: 3330501107293271038}
+  timestamps: {fileID: 11400000, guid: d3d29d9e69dfaa7418c684f528ad56a4, type: 2}
+--- !u!1 &1877405426062934948
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8047555319120947386}
+  - component: {fileID: 7136674591121749858}
+  m_Layer: 9
+  m_Name: Sword Attack 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8047555319120947386
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877405426062934948}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2310126132781421446}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7136674591121749858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877405426062934948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ee66a251a8821243bb8247615e13f71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  abilityManual:
+    choiceWeighting: 2
+    engageRange: 2
+    holdDuration: 1
+    repeatable: 1
+  holdToChain: {fileID: 8704674179787481108}
+  damage:
+    baseValue: 10
+    damageType: 0
+  cost:
+    health: 0
+    stamina: 10
+    focus: 0
+  heft: 1
+  useEffect: {fileID: 11400000, guid: 0bc213a152fcbdd47a5ec13b730e438f, type: 2}
+  attackTrigger: 0
+  damageBoxes:
+  - {fileID: 3330501107293271038}
+  timestamps: {fileID: 11400000, guid: e557e9d90d232d849951f9d688c943a2, type: 2}
+--- !u!1 &3071634250931409174
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2310126132781421446}
+  - component: {fileID: 5347432824353024378}
+  m_Layer: 9
+  m_Name: Sword Prefab
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2310126132781421446
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3071634250931409174}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6709943081317746691}
+  - {fileID: 7020509156382586055}
+  - {fileID: 8047555319120947386}
+  - {fileID: 5942667380979319703}
+  - {fileID: 6532357771821738435}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5347432824353024378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3071634250931409174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9b973c809bd7be48886d2d05ceaa866, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterComponents: {fileID: 0}
+  armsScriptable: {fileID: 0}
+  usedSlots: 
+  holdMethod: 0
+  flipOnLeftHand: 0
+  flipTransform: {fileID: 6709943081317746691}
+  idleAnimation: 0
+  abilitySet:
+  - {fileID: 7136674591121749858}
+  - {fileID: 1930842182610349311}
+  - {fileID: 7136674591121749858}
+  - {fileID: 1930842182610349311}
+--- !u!1 &7020509156382586056
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7020509156382586055}
+  - component: {fileID: 7020509156382586054}
+  - component: {fileID: 3330501107293271038}
+  m_Layer: 9
+  m_Name: Damage Box
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7020509156382586055
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7020509156382586056}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2310126132781421446}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &7020509156382586054
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7020509156382586056}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 0.03, y: 0.7798981, z: 0.05}
+  m_Center: {x: 0, y: 0.42994902, z: 0}
+--- !u!114 &3330501107293271038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7020509156382586056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d628a53d2d48ea48ab29d879755707f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &8053085039092847119
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6532357771821738435}
+  - component: {fileID: 1930842182610349311}
+  m_Layer: 9
+  m_Name: Sword Parry
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6532357771821738435
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8053085039092847119}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2310126132781421446}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1930842182610349311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8053085039092847119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f1985c9a177d2408d307f1d53c377d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  abilityManual:
+    choiceWeighting: 1
+    engageRange: 1.7
+    holdDuration: 1
+    repeatable: 1
+  cost:
+    health: 0
+    stamina: 10
+    focus: 0
+  useEffect: {fileID: 11400000, guid: 0bc213a152fcbdd47a5ec13b730e438f, type: 2}
+  parryTrigger: 2
+  timestamps: {fileID: 11400000, guid: 782967e3f2f0e684fbd5df5b526edbac, type: 2}
+  blockConfig:
+    blockAngle: 30
+    damageReduction: 1
+    ricochet: 2
+    poise: 2
+--- !u!1001 &6526904243146043368
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2310126132781421446}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: a21f51865d4ad974f9930ec77d956459,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a21f51865d4ad974f9930ec77d956459,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a21f51865d4ad974f9930ec77d956459,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a21f51865d4ad974f9930ec77d956459,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a21f51865d4ad974f9930ec77d956459,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a21f51865d4ad974f9930ec77d956459,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a21f51865d4ad974f9930ec77d956459,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a21f51865d4ad974f9930ec77d956459,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a21f51865d4ad974f9930ec77d956459,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a21f51865d4ad974f9930ec77d956459,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a21f51865d4ad974f9930ec77d956459,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a21f51865d4ad974f9930ec77d956459,
+        type: 3}
+      propertyPath: m_Name
+      value: arming sword
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a21f51865d4ad974f9930ec77d956459, type: 3}
+--- !u!4 &6709943081317746691 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a21f51865d4ad974f9930ec77d956459,
+    type: 3}
+  m_PrefabInstance: {fileID: 6526904243146043368}
+  m_PrefabAsset: {fileID: 0}

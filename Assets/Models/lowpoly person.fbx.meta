@@ -33,6 +33,21 @@ ModelImporter:
   - first:
       74: 4515881536391055613
     second: rig|SwordParry
+  - first:
+      74: -4103293008216041765
+    second: rig|ShieldBash
+  - first:
+      74: 4223236641984165980
+    second: rig|ShieldChargeStart
+  - first:
+      74: -510147710244889638
+    second: rig|ShieldChargeLoop
+  - first:
+      74: -5966251403206227436
+    second: rig|ShieldBlockStart
+  - first:
+      74: -6319388929450770135
+    second: rig|ShieldBlockLoop
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -77,9 +92,56 @@ ModelImporter:
       that will be discarded.\n\t'DEF-foot.R' has scale animation that will be discarded.\n\t'DEF-upper_arm.L'
       has scale animation that will be discarded.\n\t'DEF-forearm.L' has scale animation
       that will be discarded.\n\t'DEF-hand.L' has scale animation that will be discarded.\n\t'DEF-upper_arm.R'
-      has scale animation that will be discarded.\n\t'DEF-forearm.R' has scale animation
-      that will be discarded.\n\t'DEF-hand.R' has scale animation that will be discarded.\n\t'DEF-spine.004'
+      has scale animation that will be discarded.\n\t'DEF-hand.R' has scale animation
+      that will be discarded.\n\t'DEF-spine.004' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n\nClip 'rig|ShieldBash'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'DEF-thigh.L'
+      has scale animation that will be discarded.\n\t'DEF-shin.L' has scale animation
+      that will be discarded.\n\t'DEF-foot.L' has scale animation that will be discarded.\n\t'DEF-thigh.R'
+      has scale animation that will be discarded.\n\t'DEF-shin.R' has scale animation
+      that will be discarded.\n\t'DEF-foot.R' has scale animation that will be discarded.\n\t'DEF-upper_arm.L'
+      has scale animation that will be discarded.\n\t'DEF-forearm.L' has scale animation
+      that will be discarded.\n\t'DEF-hand.L' has scale animation that will be discarded.\n\t'DEF-spine.004'
       is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'rig|ShieldBlockLoop' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'DEF-shin.L'
+      has scale animation that will be discarded.\n\t'DEF-foot.L' has scale animation
+      that will be discarded.\n\t'DEF-thigh.R' has scale animation that will be discarded.\n\t'DEF-shin.R'
+      has scale animation that will be discarded.\n\t'DEF-foot.R' has scale animation
+      that will be discarded.\n\t'DEF-spine.004' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n\nClip 'rig|ShieldBlockStart'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'DEF-thigh.L'
+      has scale animation that will be discarded.\n\t'DEF-shin.L' has scale animation
+      that will be discarded.\n\t'DEF-foot.L' has scale animation that will be discarded.\n\t'DEF-thigh.R'
+      has scale animation that will be discarded.\n\t'DEF-shin.R' has scale animation
+      that will be discarded.\n\t'DEF-foot.R' has scale animation that will be discarded.\n\t'DEF-spine.002'
+      has scale animation that will be discarded.\n\t'DEF-spine.003' has scale animation
+      that will be discarded.\n\t'DEF-upper_arm.L' has scale animation that will
+      be discarded.\n\t'DEF-forearm.L' has scale animation that will be discarded.\n\t'DEF-hand.L'
+      has scale animation that will be discarded.\n\t'DEF-forearm.R' has scale animation
+      that will be discarded.\n\t'DEF-spine.004' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n\nClip 'rig|ShieldChargeLoop'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'DEF-thigh.L'
+      has scale animation that will be discarded.\n\t'DEF-shin.L' has scale animation
+      that will be discarded.\n\t'DEF-foot.L' has scale animation that will be discarded.\n\t'DEF-thigh.R'
+      has scale animation that will be discarded.\n\t'DEF-shin.R' has scale animation
+      that will be discarded.\n\t'DEF-foot.R' has scale animation that will be discarded.\n\t'DEF-upper_arm.L'
+      has scale animation that will be discarded.\n\t'DEF-forearm.L' has scale animation
+      that will be discarded.\n\t'DEF-hand.L' has scale animation that will be discarded.\n\t'DEF-spine.004'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'rig|ShieldChargeStart' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'DEF-thigh.L'
+      has scale animation that will be discarded.\n\t'DEF-shin.L' has scale animation
+      that will be discarded.\n\t'DEF-foot.L' has scale animation that will be discarded.\n\t'DEF-thigh.R'
+      has scale animation that will be discarded.\n\t'DEF-shin.R' has scale animation
+      that will be discarded.\n\t'DEF-foot.R' has scale animation that will be discarded.\n\t'DEF-upper_arm.L'
+      has scale animation that will be discarded.\n\t'DEF-forearm.L' has scale animation
+      that will be discarded.\n\t'DEF-hand.L' has scale animation that will be discarded.\n\t'DEF-forearm.R'
+      has scale animation that will be discarded.\n\t'DEF-spine.004' is inbetween
+      humanoid transforms and has rotation animation that will be discarded.\n\nClip
       'rig|SwordAttack1' has import animation warnings that might lower retargeting
       quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'DEF-thigh.L'
       has scale animation that will be discarded.\n\t'DEF-shin.L' has scale animation
@@ -87,9 +149,8 @@ ModelImporter:
       has scale animation that will be discarded.\n\t'DEF-shin.R' has scale animation
       that will be discarded.\n\t'DEF-foot.R' has scale animation that will be discarded.\n\t'DEF-upper_arm.L'
       has scale animation that will be discarded.\n\t'DEF-forearm.L' has scale animation
-      that will be discarded.\n\t'DEF-hand.L' has scale animation that will be discarded.\n\t'DEF-forearm.R'
-      has scale animation that will be discarded.\n\t'DEF-spine.004' is inbetween
-      humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      that will be discarded.\n\t'DEF-hand.L' has scale animation that will be discarded.\n\t'DEF-spine.004'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
       'rig|SwordAttack2' has import animation warnings that might lower retargeting
       quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'DEF-thigh.L'
       has scale animation that will be discarded.\n\t'DEF-shin.L' has scale animation
@@ -97,9 +158,8 @@ ModelImporter:
       has scale animation that will be discarded.\n\t'DEF-shin.R' has scale animation
       that will be discarded.\n\t'DEF-foot.R' has scale animation that will be discarded.\n\t'DEF-upper_arm.L'
       has scale animation that will be discarded.\n\t'DEF-forearm.L' has scale animation
-      that will be discarded.\n\t'DEF-hand.L' has scale animation that will be discarded.\n\t'DEF-forearm.R'
-      has scale animation that will be discarded.\n\t'DEF-spine.004' is inbetween
-      humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      that will be discarded.\n\t'DEF-hand.L' has scale animation that will be discarded.\n\t'DEF-spine.004'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
       'rig|SwordParry' has import animation warnings that might lower retargeting
       quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'DEF-thigh.L'
       has scale animation that will be discarded.\n\t'DEF-shin.L' has scale animation
@@ -107,9 +167,8 @@ ModelImporter:
       has scale animation that will be discarded.\n\t'DEF-shin.R' has scale animation
       that will be discarded.\n\t'DEF-foot.R' has scale animation that will be discarded.\n\t'DEF-upper_arm.L'
       has scale animation that will be discarded.\n\t'DEF-forearm.L' has scale animation
-      that will be discarded.\n\t'DEF-hand.L' has scale animation that will be discarded.\n\t'DEF-forearm.R'
-      has scale animation that will be discarded.\n\t'DEF-spine.004' is inbetween
-      humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      that will be discarded.\n\t'DEF-hand.L' has scale animation that will be discarded.\n\t'DEF-spine.004'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
       'rig|WalkForward' has import animation warnings that might lower retargeting
       quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'DEF-thigh.L'
       has scale animation that will be discarded.\n\t'DEF-shin.L' has scale animation
@@ -117,17 +176,14 @@ ModelImporter:
       has scale animation that will be discarded.\n\t'DEF-shin.R' has scale animation
       that will be discarded.\n\t'DEF-foot.R' has scale animation that will be discarded.\n\t'DEF-forearm.L'
       has scale animation that will be discarded.\n\t'DEF-hand.L' has scale animation
-      that will be discarded.\n\t'DEF-forearm.R' has scale animation that will be
-      discarded.\n\t'DEF-hand.R' has scale animation that will be discarded.\n\nClip
-      'rig|WalkLeft' has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'DEF-thigh.L'
-      has scale animation that will be discarded.\n\t'DEF-shin.L' has scale animation
-      that will be discarded.\n\t'DEF-foot.L' has scale animation that will be discarded.\n\t'DEF-thigh.R'
-      has scale animation that will be discarded.\n\t'DEF-shin.R' has scale animation
-      that will be discarded.\n\t'DEF-foot.R' has scale animation that will be discarded.\n\t'DEF-forearm.L'
-      has scale animation that will be discarded.\n\t'DEF-hand.L' has scale animation
-      that will be discarded.\n\t'DEF-forearm.R' has scale animation that will be
-      discarded.\n\t'DEF-hand.R' has scale animation that will be discarded.\n\nClip
+      that will be discarded.\n\nClip 'rig|WalkLeft' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'DEF-thigh.L' has scale animation that will
+      be discarded.\n\t'DEF-shin.L' has scale animation that will be discarded.\n\t'DEF-foot.L'
+      has scale animation that will be discarded.\n\t'DEF-thigh.R' has scale animation
+      that will be discarded.\n\t'DEF-shin.R' has scale animation that will be discarded.\n\t'DEF-foot.R'
+      has scale animation that will be discarded.\n\t'DEF-forearm.L' has scale animation
+      that will be discarded.\n\t'DEF-hand.L' has scale animation that will be discarded.\n\nClip
       'rig|WalkRight' has import animation warnings that might lower retargeting
       quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'DEF-thigh.L'
       has scale animation that will be discarded.\n\t'DEF-shin.L' has scale animation
@@ -135,8 +191,7 @@ ModelImporter:
       has scale animation that will be discarded.\n\t'DEF-shin.R' has scale animation
       that will be discarded.\n\t'DEF-foot.R' has scale animation that will be discarded.\n\t'DEF-forearm.L'
       has scale animation that will be discarded.\n\t'DEF-hand.L' has scale animation
-      that will be discarded.\n\t'DEF-forearm.R' has scale animation that will be
-      discarded.\n\t'DEF-hand.R' has scale animation that will be discarded.\n"
+      that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -394,8 +449,8 @@ ModelImporter:
       name: rig|Hurt
       takeName: rig|Hurt
       internalID: 0
-      firstFrame: 0
-      lastFrame: 59
+      firstFrame: 1
+      lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -423,7 +478,7 @@ ModelImporter:
       name: rig|Ricochet
       takeName: rig|Ricochet
       internalID: 0
-      firstFrame: 0
+      firstFrame: 1
       lastFrame: 120
       wrapMode: 0
       orientationOffsetY: 0
@@ -452,8 +507,8 @@ ModelImporter:
       name: rig|SwordAttack1
       takeName: rig|SwordAttack1
       internalID: 0
-      firstFrame: 0
-      lastFrame: 59
+      firstFrame: 1
+      lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -472,28 +527,7 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events:
-      - time: 0.4
-        functionName: Ability
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 1
-        messageOptions: 0
-      - time: 0.6032879
-        functionName: Ability
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 2
-        messageOptions: 0
-      - time: 0.862069
-        functionName: Ability
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 3
-        messageOptions: 0
+      events: []
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -522,28 +556,7 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events:
-      - time: 0.16107497
-        functionName: Ability
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 1
-        messageOptions: 0
-      - time: 0.31178325
-        functionName: Ability
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 2
-        messageOptions: 0
-      - time: 0.817408
-        functionName: Ability
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 3
-        messageOptions: 0
+      events: []
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -552,7 +565,7 @@ ModelImporter:
       name: rig|SwordParry
       takeName: rig|SwordParry
       internalID: 0
-      firstFrame: 0
+      firstFrame: 1
       lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
@@ -572,28 +585,166 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: rig|ShieldBash
+      takeName: rig|ShieldBash
+      internalID: 0
+      firstFrame: 1
+      lastFrame: 60
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: rig|ShieldChargeStart
+      takeName: rig|ShieldChargeStart
+      internalID: 0
+      firstFrame: 1
+      lastFrame: 60
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: rig|ShieldChargeLoop
+      takeName: rig|ShieldChargeLoop
+      internalID: 0
+      firstFrame: 1
+      lastFrame: 60
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
       events:
-      - time: 0.29924184
-        functionName: Ability
+      - time: 0
+        functionName: Footstep
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
-        intParameter: 1
+        intParameter: 0
         messageOptions: 0
-      - time: 0.66892904
-        functionName: Ability
+      - time: 0.4980843
+        functionName: Footstep
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
-        intParameter: 2
+        intParameter: 0
         messageOptions: 0
-      - time: 0.9247649
-        functionName: Ability
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 3
-        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: rig|ShieldBlockStart
+      takeName: rig|ShieldBlockStart
+      internalID: 0
+      firstFrame: 1
+      lastFrame: 34
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: rig|ShieldBlockLoop
+      takeName: rig|ShieldBlockLoop
+      internalID: 0
+      firstFrame: 1
+      lastFrame: 120
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -828,134 +979,134 @@ ModelImporter:
       scale: {x: 1, y: 1, z: 1}
     - name: Character
       parentName: lowpoly person(Clone)
-      position: {x: -0, y: 0, z: 0}
+      position: {x: -0.0000000018626451, y: 0.000052418007, z: 0}
       rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
       scale: {x: 1, y: 1, z: 1}
     - name: rig
       parentName: lowpoly person(Clone)
-      position: {x: -0, y: 0, z: 0}
+      position: {x: -0.0000000018626451, y: 0.000052418003, z: 0}
       rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
       scale: {x: 1, y: 1, z: 1}
     - name: root
       parentName: rig
-      position: {x: -0, y: 0, z: 0}
+      position: {x: -0.0000000018626451, y: 0, z: 0.000052418007}
       rotation: {x: -0.00000008940697, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: DEF-spine
       parentName: root
-      position: {x: -0, y: 0.05519999, z: 1.0099}
-      rotation: {x: 0.7904555, y: -0, z: -0, w: 0.61251956}
-      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      position: {x: -0, y: 0.046915736, z: 0.85833615}
+      rotation: {x: 0.7904556, y: -0, z: -0, w: 0.6125195}
+      scale: {x: 0.9999998, y: 1.0000008, z: 1.0000005}
     - name: DEF-thigh.L
       parentName: DEF-spine
-      position: {x: -0.098, y: 0.07081852, z: 0.025942275}
-      rotation: {x: 0.98651505, y: -0, z: -0, w: 0.16367106}
-      scale: {x: 1, y: 1, z: 1}
+      position: {x: -0.083292365, y: 0.06019007, z: 0.022048946}
+      rotation: {x: 0.98651487, y: -0, z: -0, w: 0.1636716}
+      scale: {x: 1.0000001, y: 0.9999996, z: 0.99999994}
     - name: DEF-shin.L
       parentName: DEF-thigh.L
-      position: {x: -0.000000007531901, y: 0.53636926, z: -0.00000000372529}
-      rotation: {x: 0.069570266, y: -0, z: -0, w: 0.9975771}
-      scale: {x: 1, y: 1.0000002, z: 1.0000001}
+      position: {x: 7.962274e-11, y: 0.45587224, z: -0.0000000018626445}
+      rotation: {x: 0.069570586, y: -0, z: -0, w: 0.99757713}
+      scale: {x: 1.0000001, y: 1.0000004, z: 1.0000006}
     - name: DEF-foot.L
       parentName: DEF-shin.L
-      position: {x: 3.0001418e-12, y: 0.4405988, z: 0.0000000023273266}
-      rotation: {x: -0.44185904, y: 0.0003461863, z: -0.00017051348, w: 0.8970845}
-      scale: {x: 1, y: 1.0000005, z: 1.0000011}
+      position: {x: -3.002626e-12, y: 0.37447459, z: -0.000000001919874}
+      rotation: {x: -0.44185933, y: 0.0004772245, z: -0.00023505709, w: 0.89708424}
+      scale: {x: 1, y: 1.000001, z: 0.99999994}
     - name: DEF-toe.L
       parentName: DEF-foot.L
-      position: {x: -0.0000000056925273, y: 0.12274258, z: 0.000000002590241}
-      rotation: {x: 0.00013559849, y: 0.9362141, z: -0.35143003, w: 0.00036133753}
-      scale: {x: 1.0000006, y: 0.99999994, z: 0.99999994}
+      position: {x: 0.0000000011714292, y: 0.10432187, z: 0.0000000013460522}
+      rotation: {x: 0.0001869459, y: 0.93621427, z: -0.35142946, w: 0.0004980542}
+      scale: {x: 1.0000005, y: 0.9999997, z: 1.0000004}
     - name: DEF-thigh.R
       parentName: DEF-spine
-      position: {x: 0.098, y: 0.07081852, z: 0.025942275}
-      rotation: {x: 0.98651505, y: -0, z: -0, w: 0.16367106}
-      scale: {x: 1, y: 1, z: 1}
+      position: {x: 0.083292365, y: 0.06019007, z: 0.022048946}
+      rotation: {x: 0.98651487, y: -0, z: -0, w: 0.1636716}
+      scale: {x: 1.0000001, y: 0.9999996, z: 0.99999994}
     - name: DEF-shin.R
       parentName: DEF-thigh.R
-      position: {x: 0.000000007531901, y: 0.53636926, z: -0.00000000372529}
-      rotation: {x: 0.069570266, y: -0, z: -0, w: 0.9975771}
-      scale: {x: 1, y: 1.0000002, z: 1.0000001}
+      position: {x: -7.962274e-11, y: 0.45587224, z: -0.0000000018626445}
+      rotation: {x: 0.069570586, y: -0, z: -0, w: 0.99757713}
+      scale: {x: 1.0000001, y: 1.0000004, z: 1.0000006}
     - name: DEF-foot.R
       parentName: DEF-shin.R
-      position: {x: -3.0001418e-12, y: 0.4405988, z: 0.0000000023273266}
-      rotation: {x: -0.44185904, y: 0.0003464001, z: -0.00017061879, w: 0.8970845}
-      scale: {x: 1, y: 1.0000005, z: 1.0000011}
+      position: {x: 3.002626e-12, y: 0.37447459, z: -0.000000001919874}
+      rotation: {x: -0.44185933, y: -0.0004772245, z: 0.00023505709, w: 0.89708424}
+      scale: {x: 1, y: 1.000001, z: 0.99999994}
     - name: DEF-toe.R
       parentName: DEF-foot.R
-      position: {x: -1.9463187e-10, y: 0.12274258, z: 0.0000000012951205}
-      rotation: {x: 0.00013568225, y: 0.9362141, z: -0.35143003, w: 0.00036156076}
-      scale: {x: 1.0000005, y: 0.99999994, z: 0.99999994}
+      position: {x: -0.0000000011714292, y: 0.10432187, z: 0.0000000013460522}
+      rotation: {x: -0.0001869459, y: 0.93621427, z: -0.35142946, w: -0.0004980542}
+      scale: {x: 1.0000005, y: 0.9999997, z: 1.0000004}
     - name: DEF-spine.001
       parentName: DEF-spine
-      position: {x: -0, y: 0.15221953, z: 0.000000009313226}
-      rotation: {x: -0.064476416, y: -0, z: -0, w: 0.9979192}
-      scale: {x: 1, y: 1, z: 0.9999999}
+      position: {x: -0, y: 0.12937464, z: 0.000000004656613}
+      rotation: {x: -0.064476565, y: -0, z: -0, w: 0.9979192}
+      scale: {x: 0.9999999, y: 1.0000007, z: 0.9999998}
     - name: DEF-spine.002
       parentName: DEF-spine.001
-      position: {x: -0, y: 0.13663666, z: 9.313226e-10}
-      rotation: {x: -0.07746413, y: -0, z: -0, w: 0.9969952}
-      scale: {x: 1, y: 1.0000002, z: 1.0000001}
+      position: {x: -0, y: 0.116130576, z: -0.0000000030559022}
+      rotation: {x: -0.07746414, y: -0, z: -0, w: 0.9969952}
+      scale: {x: 1.0000004, y: 0.9999986, z: 0.9999998}
     - name: DEF-spine.003
       parentName: DEF-spine.002
-      position: {x: -0, y: 0.17288762, z: 0.0000000037252903}
-      rotation: {x: 0.0016271544, y: -0, z: -0, w: 0.9999987}
-      scale: {x: 1, y: 0.9999992, z: 0.9999998}
+      position: {x: -0, y: 0.1469411, z: 0.0000000013969839}
+      rotation: {x: 0.0016271023, y: -0, z: -0, w: 0.99999875}
+      scale: {x: 1.0000001, y: 0.9999997, z: 0.99999994}
     - name: DEF-shoulder.L
       parentName: DEF-spine.003
-      position: {x: -0.0183, y: 0.13722122, z: 0.07825093}
-      rotation: {x: -0.5659589, y: 0.40879986, z: 0.3975598, w: 0.5954153}
-      scale: {x: 1, y: 1, z: 1.0000001}
+      position: {x: -0.015553573, y: 0.11662736, z: 0.06650718}
+      rotation: {x: -0.5659587, y: 0.40879986, z: 0.39755997, w: 0.5954154}
+      scale: {x: 1.0000002, y: 1.0000002, z: 1.0000002}
     - name: DEF-upper_arm.L
       parentName: DEF-shoulder.L
-      position: {x: -0.007791528, y: 0.20079097, z: -0.02038485}
-      rotation: {x: 0.11138074, y: -0.80236727, z: 0.14136545, w: 0.56904924}
-      scale: {x: 0.985345, y: 1.0299685, z: 0.9853441}
+      position: {x: -0.0066222055, y: 0.17065667, z: -0.017325668}
+      rotation: {x: 0.11138073, y: -0.80236745, z: 0.14136524, w: 0.56904894}
+      scale: {x: 1.0107487, y: 0.97884303, z: 1.010749}
     - name: DEF-forearm.L
       parentName: DEF-upper_arm.L
-      position: {x: 0.00000008381903, y: 0.28850973, z: -0.000000018626451}
-      rotation: {x: 0.03559482, y: 0.0045187445, z: -0.025932454, w: 0.9990196}
-      scale: {x: 0.9984969, y: 1.0092112, z: 0.99281716}
+      position: {x: -0.000000052154064, y: 0.2452108, z: 0.000000016763806}
+      rotation: {x: 0.022079559, y: 0.0052967337, z: -0.026342176, w: 0.99939513}
+      scale: {x: 1.0003082, y: 0.9908716, z: 1.0090264}
     - name: DEF-hand.L
       parentName: DEF-forearm.L
-      position: {x: -0.000000056810677, y: 0.26283556, z: 0.000000018626451}
-      rotation: {x: -0.018266063, y: 0.0006022363, z: 0.032986414, w: 0.9992887}
-      scale: {x: 1.0161926, y: 0.9672323, z: 1.0174879}
+      position: {x: 0.000000033527613, y: 0.22338964, z: 0.000000007450581}
+      rotation: {x: -0.018265896, y: 0.00060397206, z: 0.032988247, w: 0.9992887}
+      scale: {x: 0.9891289, y: 1.0238917, z: 0.9874725}
     - name: DEF-shoulder.R
       parentName: DEF-spine.003
-      position: {x: 0.0183, y: 0.13722122, z: 0.07825093}
-      rotation: {x: -0.5659589, y: -0.40879986, z: -0.3975598, w: 0.5954153}
-      scale: {x: 1, y: 1, z: 1.0000001}
+      position: {x: 0.015553573, y: 0.11662736, z: 0.06650718}
+      rotation: {x: -0.5659587, y: -0.40879986, z: -0.39755997, w: 0.5954154}
+      scale: {x: 1, y: 1.0000002, z: 1}
     - name: DEF-upper_arm.R
       parentName: DEF-shoulder.R
-      position: {x: 0.007791528, y: 0.20079097, z: -0.02038485}
-      rotation: {x: -0.11138101, y: -0.8023672, z: 0.14136522, w: -0.56904924}
-      scale: {x: 1.0066442, y: 0.98684406, z: 1.0066438}
+      position: {x: 0.0066222018, y: 0.17065665, z: -0.017325668}
+      rotation: {x: -0.11138099, y: -0.80236745, z: 0.14136511, w: -0.569049}
+      scale: {x: 1.0010843, y: 0.9978352, z: 1.0010846}
     - name: DEF-forearm.R
       parentName: DEF-upper_arm.R
-      position: {x: 0.000000109896064, y: 0.2885099, z: 0}
-      rotation: {x: 0.024292894, y: -0.005168107, z: 0.026279904, w: 0.999346}
-      scale: {x: 1.0004741, y: 0.9964437, z: 1.0031855}
+      position: {x: 0.00000014528632, y: 0.24521089, z: -0.000000011175871}
+      rotation: {x: 0.027272357, y: -0.0049962373, z: 0.02619353, w: 0.99927235}
+      scale: {x: 1.000125, y: 0.99888235, z: 1.0009954}
     - name: DEF-hand.R
       parentName: DEF-forearm.R
-      position: {x: 0.000000077299774, y: 0.26283556, z: 0.000000007450581}
-      rotation: {x: -0.018266063, y: -0.0006022363, z: -0.032986414, w: 0.9992887}
-      scale: {x: 0.9930263, y: 1.0146774, z: 0.9924737}
+      position: {x: -0.00000006426126, y: 0.2233897, z: 0.0000000037252903}
+      rotation: {x: -0.018265896, y: -0.00060397206, z: -0.032988247, w: 0.9992887}
+      scale: {x: 0.9988013, y: 1.0025789, z: 0.9986272}
     - name: DEF-spine.004
       parentName: DEF-spine.003
-      position: {x: -0, y: 0.19257845, z: -0.0000000018626451}
-      rotation: {x: 0.20173785, y: -0, z: -0, w: 0.97943956}
-      scale: {x: 1, y: 1, z: 0.9999999}
+      position: {x: -0, y: 0.16367677, z: -9.313226e-10}
+      rotation: {x: 0.20173821, y: -0, z: -0, w: 0.9794395}
+      scale: {x: 0.9999999, y: 0.99999964, z: 1.0000002}
     - name: DEF-neck
       parentName: DEF-spine.004
-      position: {x: -0, y: 0.06616339, z: 0.000000027008355}
-      rotation: {x: -0.09485753, y: -0, z: -0, w: 0.9954909}
-      scale: {x: 1, y: 1.0000001, z: 0.99999976}
+      position: {x: -0, y: 0.056233644, z: 0.000000013969839}
+      rotation: {x: -0.094857894, y: -0, z: -0, w: 0.99549085}
+      scale: {x: 1.0000001, y: 1.0000001, z: 0.99999994}
     - name: DEF-head
       parentName: DEF-neck
-      position: {x: -0, y: 0.062701255, z: -0.000000007450581}
-      rotation: {x: -0.09371206, y: -0, z: -0, w: 0.9955993}
-      scale: {x: 1, y: 0.9999999, z: 0.99999994}
+      position: {x: -0, y: 0.053291135, z: 0.000000009313226}
+      rotation: {x: -0.09371197, y: -0, z: -0, w: 0.9955994}
+      scale: {x: 1, y: 1, z: 0.9999998}
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5

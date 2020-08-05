@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-using static EffectCreator;
-
 public class CharacterSheet : MonoBehaviour
 {
     [System.Serializable] public struct AttributeValue
@@ -46,10 +44,52 @@ public class CharacterSheet : MonoBehaviour
             additionalRegen = 0;
         }
     }
+    [System.Serializable] public struct AttributeGroup
+    {
+        public int moveSpeed, rotateSpeed;
+        public AttributeGroup(int moveSpeed, int rotateSpeed)
+        {
+            this.moveSpeed = moveSpeed;
+            this.rotateSpeed = rotateSpeed;
+        }
+        public static AttributeGroup operator -(AttributeGroup a) => new AttributeGroup(-a.moveSpeed, -a.rotateSpeed);
+    }
+    [System.Serializable] public struct ResourceGroup
+    {
+        public int health, stamina, focus;
+        public ResourceGroup(int health, int stamina, int focus)
+        {
+            this.health = health;
+            this.stamina = stamina;
+            this.focus = focus;
+        }
+        public static ResourceGroup operator -(ResourceGroup a) => new ResourceGroup(-a.health, -a.stamina, -a.focus);
+    }
+    public struct DefenceFeedback
+    {
+        public bool landedOnWeapon;
+        public int ricochet, reduction, poise;
+        public static DefenceFeedback NoDefence = new DefenceFeedback(false, 0, 0, 0);
+
+        public DefenceFeedback(bool landedOnWeapon, int ricochet, int reduction, int poise)
+        {
+            this.landedOnWeapon = landedOnWeapon;
+            this.ricochet = ricochet;
+            this.reduction = reduction;
+            this.poise = poise;
+        }
+
+        public DefenceFeedback(int ricochet, int reduction, int poise)
+        {
+            landedOnWeapon = true;
+            this.ricochet = ricochet;
+            this.reduction = reduction;
+            this.poise = poise;
+        }
+    }
     public interface IAttackListener
     {
-        void OnAttacked(int damage, Vector3 contactPoint,
-            out int ricochet, out int reduction, out int poise, out bool canRicochet);
+        void OnAttacked(int damage, Vector3 contactPoint, out DefenceFeedback feedback);
     }
 
     public enum Attribute { moveSpeed, rotateSpeed, MAX }
@@ -58,10 +98,11 @@ public class CharacterSheet : MonoBehaviour
     public CharacterComponents characterComponents;
 
     [SerializeField] private AttributeRecord[] attributes = new AttributeRecord[(int)Attribute.MAX];
-    [SerializeField] private ResourceRecord[] resources = new ResourceRecord[(int)Resource.MAX] { new ResourceRecord(100, 0), new ResourceRecord(100, 2), new ResourceRecord(100, 2) };
-
-    //used to check if there are enough resources to expend, reduces object creation
-    private static int[] workingResourceValues;
+    [SerializeField] private ResourceRecord[] resources =
+        new ResourceRecord[(int)Resource.MAX] {
+            new ResourceRecord(100, 0),
+            new ResourceRecord(100, 2),
+            new ResourceRecord(100, 2) };
 
     private LifeToggler lifeToggler;
     private Movement movement;
@@ -69,10 +110,11 @@ public class CharacterSheet : MonoBehaviour
     
     private float[] regenDecimals = new float[(int)Resource.MAX];
 
-    private List<AppliedEffect> appliedEffects;
+    [SerializeField]
+    private List<Effect.AppliedEffect> appliedEffects;
     private List<IAttackListener> attackListeners;
 
-    public void LandAttack(int damage, Vector3 contactPoint, int heft, out int ricochet)
+    public void LandAttack(int damage, Vector3 origin, int heft, out int ricochet)
     {
         ricochet = 0;
         if (enabled == false) return;
@@ -83,13 +125,12 @@ public class CharacterSheet : MonoBehaviour
 
         foreach (var listener in attackListeners)
         {
-            listener.OnAttacked(damage, contactPoint,
-                out int addRicochet, out int addReduction, out int addPoise, out bool canThisRicochet);
+            listener.OnAttacked(damage, origin, out DefenceFeedback feedback);
 
-            ricochet += addRicochet;
-            reduction += addReduction;
-            poise += addPoise;
-            canRicochet = canRicochet || canThisRicochet;
+            ricochet += feedback.ricochet;
+            reduction += feedback.reduction;
+            poise += feedback.poise;
+            canRicochet = canRicochet || feedback.landedOnWeapon;
         }
 
         damage -= reduction;
@@ -143,28 +184,43 @@ public class CharacterSheet : MonoBehaviour
         ClampResource(resource);
     }
 
-    public bool HasResources(ResourceValue[] resourceValues)
+    public bool HasResources(ResourceGroup hasResources)
     {
-        if (workingResourceValues == null)
-            workingResourceValues = new int[resources.Length];
-        else for (int i = 0; i < workingResourceValues.Length; i++)
-                workingResourceValues[i] = 0;
-
-        foreach (ResourceValue resourceValue in resourceValues)
-        {
-            int i = (int)resourceValue.resource;
-            workingResourceValues[i] -= resourceValue.value;
-            if (resources[i].current + workingResourceValues[i] < 0)
-                return false;
-        }
+        if(resources[(int)Resource.health].current < hasResources.health)
+            return false;
+        else if (resources[(int)Resource.stamina].current < hasResources.stamina)
+            return false;
+        else if (resources[(int)Resource.focus].current < hasResources.focus)
+            return false;
 
         return true;
     }
 
-    public void ExpendResources(ResourceValue[] resourceValues)
+    public void IncreaseAttributes(AttributeGroup group)
     {
-        foreach (ResourceValue resourceValue in resourceValues)
-            IncreaseResource(resourceValue.resource, -resourceValue.value);
+        IncreaseAttribute(Attribute.moveSpeed, group.moveSpeed);
+        IncreaseAttribute(Attribute.rotateSpeed, group.rotateSpeed);
+    }
+
+    public void IncreaseResources(ResourceGroup group)
+    {
+        IncreaseResource(Resource.health, group.health);
+        IncreaseResource(Resource.stamina, group.stamina);
+        IncreaseResource(Resource.focus, group.focus);
+    }
+
+    public void IncreaseResourceMaxs(ResourceGroup group)
+    {
+        IncreaseResourceMax(Resource.health, group.health);
+        IncreaseResourceMax(Resource.stamina, group.stamina);
+        IncreaseResourceMax(Resource.focus, group.focus);
+    }
+
+    public void IncreaseResourceRegens(ResourceGroup group)
+    {
+        IncreaseResourceRegen(Resource.health, group.health);
+        IncreaseResourceRegen(Resource.stamina, group.stamina);
+        IncreaseResourceRegen(Resource.focus, group.focus);
     }
 
     /// <summary>
@@ -178,27 +234,45 @@ public class CharacterSheet : MonoBehaviour
             SetResource((Resource)i, GetResourceMax((Resource)i));
     }
 
-    public void AddEffect(EffectCreator creator)
+    public void AddEffect(Effect effect)
     {
-        int findIndex = appliedEffects.FindIndex((applied) => applied.creator == creator);
+        int findIndex = appliedEffects.FindIndex((applied) => applied.effect == effect);
         if (findIndex == -1)
-            appliedEffects.Add(creator.CreateEffect(this));
+        {
+            var applied = effect.CreateAppliedEffect();
+            appliedEffects.Add(applied);
+            applied.effect.Apply(this);
+        }
         else
-            appliedEffects[findIndex].Stack(creator.defaultDuration);
+        {
+            var applied = appliedEffects[findIndex];
+            effect.StackAppliedEffect(ref applied);
+            appliedEffects[findIndex] = applied;
+        }
     }
 
-    public void AddEffect(EffectCreator creator, float overrideDuration)
+    public void AddEffect(Effect effect, float overrideDuration)
     {
-        int findIndex = appliedEffects.FindIndex((applied) => applied.creator == creator);
+        int findIndex = appliedEffects.FindIndex((applied) => applied.effect == effect);
         if (findIndex == -1)
-            appliedEffects.Add(creator.CreateEffect(this, overrideDuration));
+        {
+            var applied = effect.CreateAppliedEffect();
+            applied.durationLeft = overrideDuration;
+            appliedEffects.Add(applied);
+            applied.effect.Apply(this);
+        }
         else
-            appliedEffects[findIndex].Stack(overrideDuration);
+        {
+            var applied = appliedEffects[findIndex];
+            //overload into this function if you want to override the duration
+            effect.StackAppliedEffect(ref applied);
+            appliedEffects[findIndex] = applied;
+        }
     }
 
-    public void RemoveEffect(EffectCreator creator)
+    public void RemoveEffect(Effect effect)
     {
-        int findIndex = appliedEffects.FindIndex((applied) => applied.creator == creator);
+        int findIndex = appliedEffects.FindIndex((applied) => applied.effect == effect);
         if (findIndex != -1)
             RemoveEffect(findIndex);
     }
@@ -235,10 +309,8 @@ public class CharacterSheet : MonoBehaviour
         if (regenDecimals == null || regenDecimals.Length != (int)Resource.MAX)
             regenDecimals = new float[(int)Resource.MAX];
 
-        appliedEffects = new List<AppliedEffect>();
+        appliedEffects = new List<Effect.AppliedEffect>();
         attackListeners = new List<IAttackListener>();
-
-        CheckAlive();
     }
 
     private void FixedUpdate()
@@ -267,7 +339,7 @@ public class CharacterSheet : MonoBehaviour
         //check if effects have ended
         for(int i = 0; i < appliedEffects.Count; i++)
         {
-            AppliedEffect applied = appliedEffects[i];
+            var applied = appliedEffects[i];
             if (applied.durationLeft == -1)
                 continue;
 
@@ -278,7 +350,10 @@ public class CharacterSheet : MonoBehaviour
                 i--;
             }
             else
+            {
                 applied.durationLeft = newDurationLeft;
+                appliedEffects[i] = applied;
+            }
         }
         
     }
@@ -326,7 +401,7 @@ public class CharacterSheet : MonoBehaviour
 
     private void RemoveEffect(int index)
     {
-        appliedEffects[index].Remove();
+        appliedEffects[index].effect.Remove(this);
         appliedEffects.RemoveAt(index);
         //perhaps the creator can reclaim/recycle the object
     }

@@ -1,152 +1,111 @@
 ﻿using UnityEngine;
+using System.Collections;
+
 using static CharacterSheet;
 using static Fighter;
-using static Armament;
 
-[CreateAssetMenu(fileName = "Melee Ability", menuName = "Abilities/Melee Ability", order = 1)]
-public class MeleeAbility : AbilityCreator
+public class MeleeAbility : ChainableAbility
 {
-    [System.Serializable]
-    public struct MeleeConfig
-    {
-        public DamageValue damage;
-        public int staminaCost;
-        public int heft;
-        public EffectCreator useEffect;
-        public string attackTrigger;
+    public DamageValue damage;
+    public ResourceGroup cost;
+    public int heft;
+    public Effect useEffect;
+    public AnimationConstants.AbilityTrigger attackTrigger;
+    public DamageBox[] damageBoxes;
 
-        [Header("A hold input signal will chain this ability into another")]
-        public AbilityCreator holdToChain;
+    public Timestamps timestamps;
+
+    private Coroutine routine;
+
+    public override bool CanUse(InputPhase phase)
+    {
+        if (base.CanUse(phase))
+            return true;
+
+        else if (phase == InputPhase.down &&
+            HasEnded() &&
+            characterComponents.characterSheet.HasResources(cost))
+            return true;
+
+        else return false;
     }
 
-    public interface IMelee
+    public override void Use(InputPhase phase)
     {
-        DamageBox[] GetDamageBoxes { get; }
-        HoldMethod GetHoldMethod { get; }
-    }
-
-    public class MeleeInstance : AbilityInstance
-    {
-        private const float maxHoldDifference = 0.1f;
-
-        private readonly DamageBox[] damageBoxes;
-        private MeleeConfig config;
-        private bool isUsing;
-        private AbilityInstance holdToChain;
-        private float startUseTime;
-
-        public MeleeInstance(
-            IMelee meleeInterface,
-            MeleeAbility ability,
-            CharacterComponents characterComponents) :
-            base(characterComponents, ability)
+        if (phase == InputPhase.down)
         {
-            damageBoxes = meleeInterface.GetDamageBoxes;
-            config = ability.meleeConfig;
-            if (ability.meleeConfig.holdToChain != null)
-            {
-                holdToChain = ability.meleeConfig.holdToChain.CreateAbility(meleeInterface, characterComponents);
-#if UNITY_EDITOR
-                if (holdToChain == null)
-                    Debug.LogError("Chain ability failed interface", meleeInterface as Object);
-#endif
-            }
+            characterComponents.characterSheet.IncreaseResources(-cost);
+            IsUsing = true;
+            characterComponents.animator.SetTrigger(AnimationConstants.EnumToID(attackTrigger));
+
+            if (routine != null)
+                StopCoroutine(routine);
+            routine = StartCoroutine(AttackRoutine());
         }
 
-        public override bool CanUse(InputPhase phase)
+        base.Use(phase);
+        if (ChainIsUsing)
         {
-            if (phase == InputPhase.down &&
-                isUsing == false &&
-                (holdToChain == null || holdToChain.HasEnded()) &&
-                config.staminaCost <= characterComponents.characterSheet.GetResource(Resource.stamina))
-                return true;
-
-            else if (phase == InputPhase.hold &&
-                isUsing &&
-                holdToChain != null &&
-                (Time.time - startUseTime - holdDuration) < maxHoldDifference &&
-                holdToChain.CanUse(InputPhase.down))
-                return true;
-
-            else return false;
-        }
-
-        public override void Use(InputPhase phase)
-        {
-            if (phase == InputPhase.down)
-            {
-                startUseTime = Time.time;
-                characterComponents.characterSheet.IncreaseResource(Resource.stamina, -config.staminaCost);
-                characterComponents.animationEventListener.OnAbility += OnAbility;
-                isUsing = true;
-
-                characterComponents.animator.SetTrigger(config.attackTrigger);
-            }
-            else if(phase == InputPhase.hold)
-            {
-                OnAbility(2);
-                OnAbility(3);
-                holdToChain.Use(InputPhase.down);
-            }
-        }
-
-        public override void TryEndUse(out bool isProblem)
-        {
-            isProblem = HasEnded() == false;
-            if (isProblem == false && holdToChain != null)
-                holdToChain.TryEndUse(out isProblem);
-        }
-
-        public override void ForceEndUse()
-        {
-            OnAbility(2);
-            OnAbility(3);
-            if(holdToChain != null)
-                holdToChain.ForceEndUse();
-        }
-
-        public override bool HasEnded()
-        {
-            return isUsing == false &&
-                (holdToChain == null || holdToChain.HasEnded());
-        }
-
-        private void OnAbility(int stage)
-        {
-            if (stage == 1)
-            {
-                //damage start
-                characterComponents.characterSheet.AddEffect(config.useEffect);
-
-                int calculateDamage = characterComponents.characterSheet.CalculateAttackDamage(config.damage);
-                foreach (var box in damageBoxes)
-                    box.StartAttack(calculateDamage, config.heft);
-            }
-            else if(stage == 2)
-            {
-                //damage end
-                foreach (var box in damageBoxes)
-                    box.StopAttack();
-            }
-            else if(stage == 3)
-            {
-                //ability end
-                characterComponents.characterSheet.RemoveEffect(config.useEffect);
-                characterComponents.animationEventListener.OnAbility -= OnAbility;
-                isUsing = false;
-            }
+            EndDamage();
+            EndAbility();
         }
     }
 
-    public MeleeConfig meleeConfig;
-
-    public override AbilityInstance CreateAbility(
-        object interfaceObject,
-        CharacterComponents characterComponents)
+    public override void TryEndUse(out bool isProblem)
     {
-        if (interfaceObject is IMelee meleeInterface)
-            return new MeleeInstance(meleeInterface, this, characterComponents);
-        else
-            return null;
+        isProblem = HasEnded() == false;
+        if (isProblem == false)
+            base.TryEndUse(out isProblem);
+    }
+
+    public override void ForceEndUse()
+    {
+        if (IsUsing)
+        {
+            EndDamage();
+            EndAbility();
+        }
+        base.ForceEndUse();
+    }
+
+    public override bool HasEnded()
+    {
+        return IsUsing == false && base.HasEnded();
+    }
+
+    private IEnumerator AttackRoutine()
+    {
+        yield return timestamps.GetNextWait(0);
+
+        //damage start
+        characterComponents.characterSheet.AddEffect(useEffect);
+        int calculateDamage = characterComponents.characterSheet.CalculateAttackDamage(damage);
+        foreach (var box in damageBoxes)
+            box.StartAttack(characterComponents.fighter, calculateDamage, heft);
+
+        yield return timestamps.GetNextWait(1);
+
+        //damage end
+        EndDamage();
+
+        yield return timestamps.GetNextWait(2);
+
+        //ability end
+        EndAbility();
+    }
+
+    private void EndDamage()
+    {
+        foreach (var box in damageBoxes)
+            box.StopAttack();
+    }
+
+    private void EndAbility()
+    {
+        characterComponents.characterSheet.RemoveEffect(useEffect);
+        IsUsing = false;
+
+        if (routine != null)
+            StopCoroutine(routine);
     }
 }

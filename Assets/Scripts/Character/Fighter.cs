@@ -1,33 +1,10 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
-
-using static Armament;
-using static AbilityCreator;
 
 public class Fighter : MonoBehaviour
 {
-    public interface IAbilityMirror
-    {
-        bool DoMirror { get; }
-    }
-    [System.Serializable]
-    public struct AbilityContainer
-    {
-        public AbilityInstance ability;
-        public MonoBehaviour interfaceObject;
-    }
-    [System.Serializable]
-    public struct DefaultAbility
-    {        
-        public AbilityCreator creator;
-        public MonoBehaviour interfaceObject;
-        [HideInInspector]
-        public AbilityInstance instance;
-    }
-
-    public enum InputPhase { down, hold, up }
-    public enum AbilityIndex { L1, L2, R1, R2 }
+    public enum InputPhase { up, down, hold }
+    public enum AbilityIndex { L1, L2, R1, R2, MAX }
 
     public static readonly WaitForSeconds staggerWait = new WaitForSeconds(1.0f);
     public static readonly WaitForSeconds ricochetWait = new WaitForSeconds(1.5f);
@@ -41,18 +18,12 @@ public class Fighter : MonoBehaviour
     public bool IsStaggered { get; private set; }
 
     public CharacterComponents characterComponents;
-
-    public AttackIndictator attackIndicator;
     public MaterialChanger modelMaterialChanger;
-    public Material staggerPoiseMaterial;
-
-    public EffectCreator staggerEffect;
-
-    //[HideInInspector]
-    public AbilityContainer[] currentAbilities;
+    public Effect staggerEffect;
+    public Ability[] currentAbilities = new Ability[(int)AbilityIndex.MAX];
 
     [SerializeField]
-    private DefaultAbility[] defaultAbilities = null;
+    private Ability[] defaultAbilities = new Ability[(int)AbilityIndex.MAX];
 
     private Coroutine staggerRoutine;
     private bool isPoised;    
@@ -66,9 +37,8 @@ public class Fighter : MonoBehaviour
     //the input phases for each ability
     private InputPhase[] abilityInputs;
     private Coroutine[] switchToHoldRoutine;
-
-    private int lastAbilityIndex = -1;
-    private AbilityContainer lastAbility;
+    
+    private Ability lastAbility;
 
     public void UseAbility(AbilityIndex index, bool isDown, out bool isProblem) =>
         UseAbility((int)index, isDown, out isProblem);
@@ -104,47 +74,27 @@ public class Fighter : MonoBehaviour
         TriggerAbility(index, abilityInputs[index], out isProblem);
     }
 
-    public void TryStopArms(ArmamentPrefab prefab, out bool isProblem)
-    {
-        if (lastAbility.interfaceObject == prefab)
-            TryStopLastAbility(out isProblem);
-        else isProblem = false;
-    }
-
-    public void AddAbility(int index, AbilityInstance ability, MonoBehaviour interfaceObject)
+    public void AddAbility(int index, Ability ability)
     {
         if(ability == null)
             RemoveAbility(index);
         else
-        {
-            currentAbilities[index].ability = ability;
-            currentAbilities[index].interfaceObject = interfaceObject;
-        }
+            currentAbilities[index] = ability;
     }
 
     public void RemoveAbility(int index)
     {
         if (index < defaultAbilities.Length)
-        {
-            currentAbilities[index].ability = defaultAbilities[index].instance;
-            currentAbilities[index].interfaceObject = defaultAbilities[index].interfaceObject;
-        }
+            currentAbilities[index] = defaultAbilities[index];
         else
-        {
-            currentAbilities[index].ability = null;
-            currentAbilities[index].interfaceObject = null;
-        }
+            currentAbilities[index] = null;
     }
 
     public bool RicochetStagger()
     {
-        if (lastAbility.ability.HasEnded() == false &&
-           lastAbility.interfaceObject is ArmamentPrefab prefab &&
-           prefab.holdMethod != HoldMethod.none)
+        if (HasLastAbilityEnded() == false)
         {
             StartStagger(AnimationConstants.Ricochet, ricochetWait);
-            //if(prefab.holdMethod == HoldMethod.bothHands)
-            //  use a different animation
             return true;
         }
         else return false;
@@ -158,29 +108,27 @@ public class Fighter : MonoBehaviour
 
             if (poiseRoutine != null)
                 StopCoroutine(poiseRoutine);
-            poiseRoutine = StartCoroutine(PoiseRoutine(staggerPoiseMaterial));
+            poiseRoutine = StartCoroutine(PoiseRoutine());
         }
     }
 
     public bool HasLastAbilityEnded()
     {
-        if (lastAbility.ability != null)
-            return lastAbility.ability.HasEnded();
+        if (lastAbility != null)
+            return lastAbility.HasEnded();
         else return true;
     }
 
     public void TryStopLastAbility(out bool isProblem)
     {
-        if (lastAbility.ability != null)
-            lastAbility.ability.TryEndUse(out isProblem);
+        if (lastAbility != null)
+            lastAbility.TryEndUse(out isProblem);
         else isProblem = false;
     }
 
     private void TriggerAbility(int index, InputPhase phase, out bool isProblem)
     {
-        AbilityContainer selectedContainer = currentAbilities[index];
-
-        if (IsStaggered || selectedContainer.ability == null)
+        if (IsStaggered || currentAbilities[index] == null)
         {
             isProblem = true;
             return;
@@ -188,7 +136,7 @@ public class Fighter : MonoBehaviour
 
         bool checkedCanUse = false;
 
-        if(lastAbilityIndex != index)
+        if(lastAbility != currentAbilities[index])
         {
             if (phase == InputPhase.hold)
             {
@@ -200,7 +148,7 @@ public class Fighter : MonoBehaviour
             }
             else
             {
-                if (selectedContainer.ability.CanUse(phase))
+                if (currentAbilities[index].CanUse(phase))
                 {
                     TryStopLastAbility(out isProblem);
                     if (isProblem) return;
@@ -214,16 +162,11 @@ public class Fighter : MonoBehaviour
             }
         }
 
-        if (checkedCanUse || selectedContainer.ability.CanUse(phase))
+        if (checkedCanUse || currentAbilities[index].CanUse(phase))
         {
-            lastAbilityIndex = index;
-            lastAbility = selectedContainer;
-
-            animator.SetBool(AnimationConstants.Mirror,
-                selectedContainer.interfaceObject is IAbilityMirror abilityMirror &&
-                abilityMirror.DoMirror);
-
-            selectedContainer.ability.Use(phase);
+            lastAbility = currentAbilities[index];
+            animator.SetBool(AnimationConstants.Mirror, lastAbility.Mirror);
+            lastAbility.Use(phase);
             isProblem = false;
         }
         else
@@ -239,18 +182,18 @@ public class Fighter : MonoBehaviour
 
     private IEnumerator StaggerRoutine(int triggerId, WaitForSeconds stunDuration)
     {
-        if (lastAbility.ability != null)
-            lastAbility.ability.ForceEndUse();
+        if (lastAbility != null)
+            lastAbility.ForceEndUse();
 
         animator.SetTrigger(triggerId);
         characterSheet.AddEffect(staggerEffect);
         IsStaggered = true;
         yield return stunDuration;
 
-        IsStaggered = false;
+        ResetStagger();
     }
 
-    private IEnumerator PoiseRoutine(Material poisedMaterial)
+    private IEnumerator PoiseRoutine()
     {
         //start
         if (isPoiseResetted == false)
@@ -258,7 +201,7 @@ public class Fighter : MonoBehaviour
 
         isPoised = true;
         isPoiseResetted = false;
-        modelMaterialChanger.Flicker(poisedMaterial);
+        modelMaterialChanger.Flicker();
         yield return new WaitForSeconds(poiseDuration);        
 
         //poise ends, if hit again then poise duration increases
@@ -267,14 +210,25 @@ public class Fighter : MonoBehaviour
         yield return new WaitForSeconds(poiseReset);
 
         //poise increase window is gone
-        poiseDuration = basePoise;
-        isPoiseResetted = true;
+        ResetPoise();
     }
 
     private IEnumerator SwitchToHoldRoutine(int index)
     {
         yield return holdWait;
         abilityInputs[index] = InputPhase.hold;
+    }
+
+    private void ResetStagger()
+    {
+        characterSheet.RemoveEffect(staggerEffect);
+        IsStaggered = false;
+    }
+
+    private void ResetPoise()
+    {
+        poiseDuration = basePoise;
+        isPoiseResetted = true;
     }
 
     private void Awake()
@@ -285,16 +239,8 @@ public class Fighter : MonoBehaviour
         int defaultLength = defaultAbilities.Length;
         int abilitiesLength = Mathf.Max(defaultLength, 4);
 
-        currentAbilities = new AbilityContainer[abilitiesLength];
         for(int i = 0; i < abilitiesLength && i < defaultLength; i++)
-        {
-            var newAbility = defaultAbilities[i].creator.CreateAbility(
-                defaultAbilities[i].interfaceObject, 
-                characterComponents);
-
-            currentAbilities[i].ability = defaultAbilities[i].instance = newAbility;
-            currentAbilities[i].interfaceObject = defaultAbilities[i].interfaceObject;
-        }
+            currentAbilities[i] = defaultAbilities[i];
 
         abilityInputs = new InputPhase[abilitiesLength];
         switchToHoldRoutine = new Coroutine[abilitiesLength];
@@ -302,8 +248,11 @@ public class Fighter : MonoBehaviour
 
     private void OnDisable()
     {
-        if(lastAbility.ability != null)
-            lastAbility.ability.ForceEndUse();
+        if(lastAbility != null)
+            lastAbility.ForceEndUse();
+        //reset all coroutines
+        ResetStagger();
+        ResetPoise();
     }
 
     private void FixedUpdate()

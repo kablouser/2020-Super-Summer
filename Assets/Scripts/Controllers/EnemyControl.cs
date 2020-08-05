@@ -21,7 +21,7 @@ public class EnemyControl : MonoBehaviour
     /// <summary>
     /// amount of extra time to calculate target's position
     /// </summary>
-    public const float predictIntoFuture = 0.2f;
+    public const float predictIntoFuture = 0.15f;
     /// <summary>
     /// multiplier that changes the desired range
     /// </summary>
@@ -37,8 +37,6 @@ public class EnemyControl : MonoBehaviour
     private Equipment equipment;
     private Fighter fighter;
     private NavMeshAgent agent;
-    
-    private AbilityContainer[] currentAbilities;
 
     private Coroutine currentAction;
     private bool currentActionFinished = false;
@@ -64,8 +62,10 @@ public class EnemyControl : MonoBehaviour
     private void Start()
     {
         equipment.AutoEquip();
-        currentAbilities = fighter.currentAbilities;
         currentAction = StartCoroutine(RandomAbilityRoutine());
+        //currentActionFinished = false;
+        //movement.SetMove(0, -0.3f);
+        //fighter.UseAbility(AbilityIndex.L2, true, out _);
     }
 
     private void OnDisable()
@@ -91,8 +91,8 @@ public class EnemyControl : MonoBehaviour
 
         int chosenIndex = -1;
         int rotateDirection = -2;
-        List<AbilityManual> usableAbilities = new List<AbilityManual>(1 + currentAbilities.Length) { neutralMove };
-        List<int> abilityIndexes = new List<int>(1 + currentAbilities.Length) { -1 };
+        List<AbilityManual> usableAbilities = new List<AbilityManual>(1 + fighter.currentAbilities.Length) { neutralMove };
+        List<int> abilityIndexes = new List<int>(1 + fighter.currentAbilities.Length) { -1 };
 
         while (currentTargetAlive)
         {
@@ -100,11 +100,11 @@ public class EnemyControl : MonoBehaviour
             float totalWeighting = neutralMove.choiceWeighting;
 
             int index = 0;
-            foreach(AbilityContainer container in currentAbilities)
+            foreach(Ability ability in fighter.currentAbilities)
             {
-                if(container.ability != null)
+                if(ability != null)
                 {
-                    AbilityManual getManual = container.ability.creator.abilityManual;
+                    AbilityManual getManual = ability.abilityManual;
                     totalWeighting += getManual.choiceWeighting;
                     usableAbilities.Add(getManual);
                     abilityIndexes.Add(index);

@@ -6,30 +6,23 @@ public class MaterialChanger : MonoBehaviour
     public readonly WaitForSeconds wait = new WaitForSeconds(0.2f);
 
     public Renderer[] renderers;
+    public Material flickeringMaterial;
 
     private bool usingOriginal = true;
-    private Material[][] originalMaterials;
+    private Material[] originalMaterials;
     private Coroutine flickerRoutine;
 
     private void Awake()
     {
-        originalMaterials = new Material[renderers.Length][];
+        originalMaterials = new Material[renderers.Length];
         for (int i = 0; i < renderers.Length; i++)
-        {
-            originalMaterials[i] = (Material[])renderers[i].sharedMaterials.Clone();
-        }
+            originalMaterials[i] = renderers[i].sharedMaterial;
     }
 
-    public void ChangeTo(Material newMaterial)
+    public void ChangeToFlickerMaterial()
     {
-        foreach(Renderer renderer in renderers)
-        {
-            Material[] materials = renderer.sharedMaterials;
-            for (int i = 0; i < materials.Length; i++)
-                materials[i] = newMaterial;
-
-            renderer.sharedMaterials = materials;
-        }
+        for (int i = 0; i < renderers.Length; i++)
+            renderers[i].sharedMaterial = flickeringMaterial;
 
         usingOriginal = false;
     }
@@ -40,21 +33,15 @@ public class MaterialChanger : MonoBehaviour
             return;            
 
         for(int i = 0; i < renderers.Length; i++)
-        {
-            Material[] materials = renderers[i].sharedMaterials;
-            for (int j = 0; j < materials.Length; j++)
-                materials[j] = originalMaterials[i][j];
-
-            renderers[i].sharedMaterials = materials;
-        }
+            renderers[i].sharedMaterial = originalMaterials[i];
 
         usingOriginal = true;
     }
 
-    public void Flicker(Material flickerMaterial)
+    public void Flicker()
     {
         StopFlicker();
-        flickerRoutine = StartCoroutine(FlickerRoutine(flickerMaterial));
+        flickerRoutine = StartCoroutine(FlickerRoutine());
     }
 
     public void StopFlicker()
@@ -64,11 +51,11 @@ public class MaterialChanger : MonoBehaviour
         Revert();
     }
 
-    private IEnumerator FlickerRoutine(Material flickerMaterial)
+    private IEnumerator FlickerRoutine()
     {
         do
         {
-            ChangeTo(flickerMaterial);
+            ChangeToFlickerMaterial();
             yield return wait;
             Revert();
             yield return wait;

@@ -15,7 +15,11 @@ public class Movement : MonoBehaviour
 
     public const float impulseCutoff = 0.25f;
     public const float extraCutoff = 0.7f;
-    
+
+    public delegate void CollisionEvent(Collision collision);
+
+    public event CollisionEvent OnCollisionEvent;
+
     public CharacterComponents characterComponents;
 
     public Transform head;
@@ -31,8 +35,10 @@ public class Movement : MonoBehaviour
 
     private Quaternion headForward;
     private Quaternion modelTargetRotation;
-    [SerializeField]
     private Vector3 move;
+
+    private bool locked;
+    private Vector3 lockedMove;
 
     private bool grounded;
     private float groundGradient;
@@ -46,6 +52,19 @@ public class Movement : MonoBehaviour
         move.z = Mathf.Clamp(moveZ, maxBackPedal, 1);
         if (1 < move.sqrMagnitude)
             move.Normalize();
+    }
+    public void SetLockedMove(float moveX, float moveZ)
+    {
+        locked = true;
+
+        lockedMove.x = moveX;
+        lockedMove.z = Mathf.Clamp(moveZ, maxBackPedal, 1);
+        if (1 < lockedMove.sqrMagnitude)
+            lockedMove.Normalize();
+    }
+    public void Unlock()
+    {
+        locked = false;
     }
     public void SetLook(ref float angleX, float angleY)
     {
@@ -69,7 +88,7 @@ public class Movement : MonoBehaviour
     private void OnDisable()
     {
         animationMove = Vector3.zero;
-        UpdateAnimationMove(Vector3.zero);
+        UpdateAnimationMove(Vector3.zero, Vector3.zero);
         SetFriction(true);
     }
     private void Update()
@@ -80,19 +99,21 @@ public class Movement : MonoBehaviour
     {
         Vector3 currentVelocity = rigidbodyComponent.velocity;
 
-        if (move == Vector3.zero)
+        Vector3 moveInput = locked ? lockedMove : move;
+
+        if (moveInput == Vector3.zero)
         {
             if (animationMove != Vector3.zero)
-                UpdateAnimationMove(currentVelocity);
+                UpdateAnimationMove(currentVelocity, moveInput);
             SetFriction(true);
         }
         else
         {
-            UpdateAnimationMove(currentVelocity);
+            UpdateAnimationMove(currentVelocity, moveInput);
             SetFriction(false);
 
             //rotate and scale by movementSpeed
-            Vector3 targetDirection = headForward * move;
+            Vector3 targetDirection = headForward * moveInput;
             float speed = movementSpeed;
 
             if (grounded)
@@ -128,6 +149,10 @@ public class Movement : MonoBehaviour
             rigidbodyComponent.AddForce(impulse, ForceMode.Impulse);
         }
     }
+
+    private void OnCollisionEnter(Collision collision) =>
+        OnCollisionEvent?.Invoke(collision);
+
     private void OnCollisionStay(Collision collisionInfo)
     {
         if (grounded)
@@ -144,11 +169,11 @@ public class Movement : MonoBehaviour
             }
     }
 
-    private void UpdateAnimationMove(Vector3 currentVelocity)
+    private void UpdateAnimationMove(Vector3 currentVelocity, Vector3 moveInput)
     {
         //lerp it to smooth out animation
-        animationMove.x = Mathf.Lerp(animationMove.x, move.x, animationMoveAcceleration * Time.fixedDeltaTime);
-        animationMove.z = Mathf.Lerp(animationMove.z, move.z, animationMoveAcceleration * Time.fixedDeltaTime);
+        animationMove.x = Mathf.Lerp(animationMove.x, moveInput.x, animationMoveAcceleration * Time.fixedDeltaTime);
+        animationMove.z = Mathf.Lerp(animationMove.z, moveInput.z, animationMoveAcceleration * Time.fixedDeltaTime);
 
         animator.SetFloat(AnimationConstants.MoveX, animationMove.x);
 

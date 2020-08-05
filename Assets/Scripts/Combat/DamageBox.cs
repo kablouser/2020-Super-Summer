@@ -4,16 +4,18 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Collider))]
 public class DamageBox : MonoBehaviour
 {
-    public Fighter owner;    
+    public event System.Action<CharacterComponents> OnLandAttack;
 
+    private Fighter owner;
     private int damage;
     private int heft;
 
     private List<CharacterSheet> targetsAttacked;
     private Collider hitbox;
 
-    public void StartAttack(int damage, int heft)
+    public void StartAttack(Fighter owner, int damage, int heft)
     {
+        this.owner = owner;
         this.damage = damage;
         this.heft = heft;
 
@@ -45,9 +47,10 @@ public class DamageBox : MonoBehaviour
             targetsAttacked.Add(tag.attachedCharacter);
 
             tag.attachedCharacter.LandAttack(damage,
-                owner.attackIndicator.transform.position,
+                owner.characterComponents.CenterPosition,
                 heft,
                 out int ricochet);
+            OnLandAttack?.Invoke(tag.attachedCharacter.characterComponents);
 
             if (heft < ricochet)
                 owner.RicochetStagger();

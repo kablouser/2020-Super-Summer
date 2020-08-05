@@ -59,28 +59,27 @@ public class Armament : Item
             usedSlots = usableConfigs[0].config;
     }
 
-    public virtual ArmamentPrefab SpawnPrefab(Equipment equipment, Slot[] usedSlots, Transform[] equipmentTransforms)
+    public virtual ArmamentPrefab SpawnPrefab(Equipment equipment, Transform setParent,
+        Slot[] usedSlots, Transform[] equipmentTransforms)
     {        
         ArmamentPrefab prefab = Instantiate(armsPrefab);
-        prefab.characterComponents = equipment.characterComponents;
-        prefab.armsScriptable = this;
-        prefab.usedSlots = usedSlots;
-        if(usedSlots.Length == 1)
+        HoldMethod holdMethod = HoldMethod.none;
+        if (usedSlots.Length == 1)
         {
             if (usedSlots[0] == Slot.leftHand)
-                prefab.holdMethod = HoldMethod.leftHand;
+                holdMethod = HoldMethod.leftHand;
             else if (usedSlots[0] == Slot.rightHand)
-                prefab.holdMethod = HoldMethod.rightHand;
+                holdMethod = HoldMethod.rightHand;
         }
-        else if(usedSlots.Length == 2)
+        else if (usedSlots.Length == 2)
         {
             if ((usedSlots[0] == Slot.leftHand && usedSlots[1] == Slot.rightHand) ||
                 (usedSlots[1] == Slot.leftHand && usedSlots[0] == Slot.rightHand))
-                prefab.holdMethod = HoldMethod.bothHands;
+                holdMethod = HoldMethod.bothHands;
         }
-        
-        prefab.CorrectPosition(equipmentTransforms);
-        prefab.AfterSpawn();
+
+        prefab.Setup(equipment.characterComponents, this, usedSlots, holdMethod);        
+        prefab.CorrectPosition(setParent, equipmentTransforms);
         prefab.MapAbilitySet();
 
         return prefab;

@@ -22,6 +22,13 @@ public class Projectile : MonoBehaviour
     private List<Collider> insideShooterColliders;
     private float startFrame;
 
+    public void Setup(int damage, int heft, CharacterSheet shooter)
+    {
+        this.damage = damage;
+        this.heft = heft;
+        this.shooter = shooter;
+    }
+
     private void Start()
     {
         startFrame = Time.time;

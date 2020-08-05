@@ -14,30 +14,29 @@ public class AttackIndictator : MonoBehaviour
     public LineRenderer lastHitIndicator;
     public Gradient blockedGradient;
     public Gradient landedGradient;
-    
-    [Header("Script variable")]
-    public float blockAngle;
 
+    private float blockAngle;
     private Coroutine fadeLastHitRoutine;
     private Coroutine fadeBlockIndicatorRoutine;
 
-    public void SetBlockIndicator(bool enabled)
+    public void EnableBlockIndicator(float blockAngle)
     {
-        if (enabled)
-        {
-            blockIndicator.color = normalBlockIndicator;
-            blockIndicator.gameObject.SetActive(true);
-            if (fadeBlockIndicatorRoutine != null)
-                StopCoroutine(fadeBlockIndicatorRoutine);
+        this.blockAngle = blockAngle;
 
-            float angleRads = Mathf.Deg2Rad * blockAngle;
-            float radius = blockDistance * Mathf.Tan(angleRads);
+        blockIndicator.color = normalBlockIndicator;
+        blockIndicator.gameObject.SetActive(true);
+        if (fadeBlockIndicatorRoutine != null)
+            StopCoroutine(fadeBlockIndicatorRoutine);
 
-            Transform blockTransform = blockIndicator.transform;
-            blockTransform.localScale = 2 * radius * Vector3.one;
-        }
-        else blockIndicator.gameObject.SetActive(false);
+        float angleRads = Mathf.Deg2Rad * blockAngle;
+        float radius = blockDistance * Mathf.Tan(angleRads);
+
+        Transform blockTransform = blockIndicator.transform;
+        blockTransform.localScale = 2 * radius * Vector3.one;
     }
+
+    public void DisableBlockIndicator() =>
+        blockIndicator.gameObject.SetActive(false);
 
     public void FadeOutBlockIndicator()
     {

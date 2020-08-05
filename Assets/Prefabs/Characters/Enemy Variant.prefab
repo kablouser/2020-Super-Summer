@@ -61,6 +61,7 @@ MonoBehaviour:
   fighter: {fileID: 1391776844843463996}
   animator: {fileID: 1592052872528598817}
   animationEventListener: {fileID: 3944929640062661536}
+  attackIndicator: {fileID: 581050350761206886}
   agent: {fileID: 1737705223}
   enemyControl: {fileID: 1737705222}
 --- !u!1001 &4236125340639134385
@@ -272,5 +273,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc992e58512157648a4263d343b8c951, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &581050350761206886 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3664227754203637463, guid: e31be4136d00fb644a84f5fb5fec4384,
+    type: 3}
+  m_PrefabInstance: {fileID: 4236125340639134385}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e7d342696eb9bf4e865e2c7f9b4295f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
