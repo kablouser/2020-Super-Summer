@@ -3,10 +3,10 @@ using System.Collections;
 
 public class AttackIndictator : MonoBehaviour
 {
-    public const float blockDistance = .8f;
     public const float lastHitFadeRate = 1.0f;
     public const float blockIndicatorFadeRate = 2.0f;
 
+    public GameObject blockIndicatorRotator;
     public SpriteRenderer blockIndicator;
     public Color normalBlockIndicator;
     public Color fadedBlockIndicator;
@@ -14,6 +14,8 @@ public class AttackIndictator : MonoBehaviour
     public LineRenderer lastHitIndicator;
     public Gradient blockedGradient;
     public Gradient landedGradient;
+
+    public float blockDistance = .7f;
 
     private float blockAngle;
     private Coroutine fadeLastHitRoutine;
@@ -23,25 +25,25 @@ public class AttackIndictator : MonoBehaviour
     {
         this.blockAngle = blockAngle;
 
-        blockIndicator.color = normalBlockIndicator;
-        blockIndicator.gameObject.SetActive(true);
         if (fadeBlockIndicatorRoutine != null)
             StopCoroutine(fadeBlockIndicatorRoutine);
 
         float angleRads = Mathf.Deg2Rad * blockAngle;
         float radius = blockDistance * Mathf.Tan(angleRads);
 
-        Transform blockTransform = blockIndicator.transform;
-        blockTransform.localScale = 2 * radius * Vector3.one;
+        blockIndicator.transform.localScale = 2 * radius * Vector3.one;
+        blockIndicator.color = normalBlockIndicator;
+        blockIndicatorRotator.SetActive(true);
     }
 
     public void DisableBlockIndicator() =>
-        blockIndicator.gameObject.SetActive(false);
+        blockIndicatorRotator.SetActive(false);
 
     public void FadeOutBlockIndicator()
     {
+        if (blockIndicatorRotator.gameObject.activeSelf == false) return;
+
         blockIndicator.color = normalBlockIndicator;
-        blockIndicator.gameObject.SetActive(true);
 
         if (fadeBlockIndicatorRoutine != null)
             StopCoroutine(fadeBlockIndicatorRoutine);
@@ -106,6 +108,6 @@ public class AttackIndictator : MonoBehaviour
         }
         while (progress < 1);
 
-        blockIndicator.gameObject.SetActive(false);
+        blockIndicatorRotator.SetActive(false);
     }
 }

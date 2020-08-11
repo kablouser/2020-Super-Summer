@@ -13,7 +13,9 @@ public class BlockAbility : Ability, IAttackListener
         public int ricochet, poise;
     }
 
-    public StatusEffect useEffect;
+    public ResourceGroup cost;
+
+    public Effect useEffect;
 
     public AnimationConstants.AbilityTrigger enableTrigger;
     public AnimationConstants.AbilityTrigger disableTrigger;
@@ -23,12 +25,11 @@ public class BlockAbility : Ability, IAttackListener
     private Coroutine routine;
 
     public static void BlockAttack(
-        Movement blocker, AttackIndictator attackIndicator, BlockConfig block,
+        AttackIndictator attackIndicator, BlockConfig block,
         int damage, Vector3 contactPoint, out DefenceFeedback feedback)
     {
         Vector3 contactDirection = contactPoint - attackIndicator.transform.position;
-        Transform model = blocker.bodyRotator;
-        float angle = Vector3.Angle(contactDirection, model.forward);
+        float angle = Vector3.Angle(contactDirection, attackIndicator.blockIndicator.transform.forward);
 
         if (angle <= block.blockAngle)
         {
@@ -51,7 +52,8 @@ public class BlockAbility : Ability, IAttackListener
     {
         if ((phase == InputPhase.down || phase == InputPhase.hold) &&
             HasEnded())
-            return IsDrained() == false;
+            return characterComponents.characterSheet.HasResources(cost) &&
+                IsDrained() == false;
         else if (phase == InputPhase.up && HasEnded() == false)
             return true;
         else
@@ -66,6 +68,7 @@ public class BlockAbility : Ability, IAttackListener
             characterComponents.animator.ResetTrigger(AnimationConstants.EnumToID(disableTrigger));
             characterComponents.characterSheet.AddEffect(useEffect, -1);
             characterComponents.characterSheet.AddAttackListener(this);
+            characterComponents.characterSheet.IncreaseResources(-cost);
             characterComponents.attackIndicator.EnableBlockIndicator(blockConfig.blockAngle);
             IsUsing = true;
 
@@ -91,9 +94,9 @@ public class BlockAbility : Ability, IAttackListener
             EndUse(true);
     }
 
-    public void OnAttacked(int damage, Vector3 contactPoint, out DefenceFeedback feedback)
+    public void OnAttacked(int damage, Vector3 contactPoint, CharacterComponents character, out DefenceFeedback feedback)
     {
-        BlockAttack(characterComponents.movement, characterComponents.attackIndicator,
+        BlockAttack(characterComponents.attackIndicator,
             blockConfig, damage, contactPoint, out feedback);
     }
 
@@ -113,10 +116,12 @@ public class BlockAbility : Ability, IAttackListener
 
     private bool IsDrained()
     {
-        if (useEffect == null)
-            return false;
-        else
-            return useEffect.IsResourcesDrained(characterComponents.characterSheet);
+        if (useEffect == null) return false;
+
+        StatusEffect statusEffect = useEffect.IsA<StatusEffect>();
+        if (statusEffect == null) return false;
+
+        return statusEffect.IsResourcesDrained(characterComponents.characterSheet);
     }
 
     private void EndUse(bool fade)

@@ -34,12 +34,16 @@ public class EventSystemModifier : Singleton<EventSystemModifier>
     public PlayerInput playerInput;
     public InputSystemUIInputModule inputModule;
 
-    public InputActionReference FirstOptionAction;
-    public InputActionReference SecondOptionAction;
+    public InputActionReference firstOptionAction;
+    public InputActionReference secondOptionAction;
+
+    public InputActionReference[] disableActionsInMenu;
 
     private List<RaycastResult> raycastResults;
     private PointerEventData pointerData;
     private List<Panel> panels;
+
+    private float enabledFrame;
 
     public override void Awake()
     {
@@ -53,8 +57,11 @@ public class EventSystemModifier : Singleton<EventSystemModifier>
         panels = new List<Panel>(1);
     }
 
-    public void EnablePanel(Panel panel) =>
+    public void EnablePanel(Panel panel)
+    {
+        enabledFrame = Time.time;
         panels.Add(panel);
+    }
 
     public void DisablePanel(Panel panel) =>
         panels.Remove(panel);
@@ -63,6 +70,24 @@ public class EventSystemModifier : Singleton<EventSystemModifier>
     {
         Cursor.visible = isVisible;
         Cursor.lockState = isVisible ? CursorLockMode.None : CursorLockMode.Locked;
+    }
+
+    public void SetMenuMode(bool inMenu)
+    {
+        if (IsUsingMouse)
+        {
+            SetMouseVisible(inMenu);
+
+            //update disableActionsInMenu
+            for (int i = 0; i < disableActionsInMenu.Length; i++)
+                if (disableActionsInMenu[i] != null)
+                {
+                    if(inMenu)
+                        disableActionsInMenu[i].action.Disable();
+                    else
+                        disableActionsInMenu[i].action.Enable();
+                }
+        }
     }
 
     private void OnEnable()
@@ -75,10 +100,12 @@ public class EventSystemModifier : Singleton<EventSystemModifier>
         inputModule.cancel.action.performed += OnCancel;
         inputModule.submit.action.performed += OnSubmit;
         
-        FirstOptionAction.action.Enable();
-        SecondOptionAction.action.Enable();
-        FirstOptionAction.action.performed += OnFirstOption;
-        SecondOptionAction.action.performed += OnSecondOption;
+        firstOptionAction.action.Enable();
+        secondOptionAction.action.Enable();
+        firstOptionAction.action.performed += OnFirstOption;
+        secondOptionAction.action.performed += OnSecondOption;
+
+        enabledFrame = Time.time;
     }
 
     private void OnDisable()
@@ -90,10 +117,10 @@ public class EventSystemModifier : Singleton<EventSystemModifier>
         inputModule.cancel.action.performed -= OnCancel;
         inputModule.submit.action.performed -= OnSubmit;
 
-        FirstOptionAction.action.Disable();
-        SecondOptionAction.action.Disable();
-        FirstOptionAction.action.performed -= OnFirstOption;
-        SecondOptionAction.action.performed -= OnSecondOption;
+        firstOptionAction.action.Disable();
+        secondOptionAction.action.Disable();
+        firstOptionAction.action.performed -= OnFirstOption;
+        secondOptionAction.action.performed -= OnSecondOption;
     }
 
     private void Update()
@@ -151,7 +178,7 @@ public class EventSystemModifier : Singleton<EventSystemModifier>
 
     private void OnCancel(InputAction.CallbackContext context)
     {
-        if (panels.Count == 0)
+        if (panels.Count == 0 || enabledFrame == Time.time)
             return;
 
         panels[panels.Count - 1].Hide();
@@ -202,11 +229,7 @@ public class EventSystemModifier : Singleton<EventSystemModifier>
     {
         IsUsingMouse = isUsing;
 
-        if (isUsing)
-        {
-            //update our mouse's position
-        }
-        else
+        if (isUsing == false)
         {
             //unhover current hovered
             Hovered = GetHovered();

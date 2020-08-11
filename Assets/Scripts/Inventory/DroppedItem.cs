@@ -53,7 +53,8 @@ public class DroppedItem : MonoBehaviour
 
     private void FixedUpdate()
     {
-        displayRotator.transform.forward = cameraTransform.forward;
+        if(cameraTransform != null)
+            displayRotator.transform.forward = cameraTransform.forward;
     }
 
     private void OnCollisionEnter(Collision collision)

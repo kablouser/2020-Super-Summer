@@ -9,7 +9,7 @@ public class EnvironmentHazard : MonoBehaviour
     public Effect stayDebuff;
 
     private void OnCollisionEnter(Collision collision)
-    {        
+    {
         var rigidbody = collision.rigidbody;
         if (rigidbody == null) return;
 
@@ -17,7 +17,8 @@ public class EnvironmentHazard : MonoBehaviour
         if (entering != null)
         {
             if (onEnter)
-                entering.LandAttack(enterDamage.baseValue, collision.GetContact(0).point, heft, out _);
+                entering.LandAttack(enterDamage.baseValue, collision.GetContact(0).point,
+                    null, heft, out _);
 
             if (onStay)
                 entering.AddEffect(stayDebuff);
@@ -31,11 +32,11 @@ public class EnvironmentHazard : MonoBehaviour
         var rigidbody = collision.rigidbody;
         if (rigidbody == null) return;
 
-        CharacterSheet entering = rigidbody.GetComponent<CharacterSheet>();
-        if (entering != null)
+        CharacterSheet exiting = rigidbody.GetComponent<CharacterSheet>();
+        if (exiting != null)
         {
             if (onStay)
-                entering.RemoveEffect(stayDebuff);
+                exiting.RemoveEffect(stayDebuff);
         }
     }
 }

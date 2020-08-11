@@ -15,8 +15,11 @@ MonoBehaviour:
   grams: 100
   volume: 100
   icon: {fileID: 21300000, guid: d56b29e711b6ca242b0b37d577f9e55d, type: 3}
-  description: "Button 1:\n\t[tap] vertical slash\n\t[hold] horizontal slash\n\nButton
-    2:\n\t[tap] parry"
+  colorPicker: {r: 0.28235295, g: 0.78039217, b: 0.27058825, a: 0}
+  description: "Left Click (Left Hand) / Right Click (Right Hand):\n\t[tap] vertical
+    slash (uses <color=#48C745>stamina</color>)\n\t[hold] horizontal slash (uses
+    <color=#48C745>stamina</color>)\n\nQ (Left Hand) / E (Right Hand):\n\t[tap] parry
+    (uses <color=#48C745>stamina</color>)"
   armsPrefab: {fileID: 5347432824353024378, guid: 247c8ae349ef24c4fbddab3c11d70db9,
     type: 3}
   usableConfigs:

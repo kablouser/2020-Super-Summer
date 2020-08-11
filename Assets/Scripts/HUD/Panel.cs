@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public abstract class Panel : MonoBehaviour
@@ -40,16 +41,19 @@ public abstract class Panel : MonoBehaviour
     public virtual void Hide()
     {
         EventSystemModifier.Current.DisablePanel(this);
-        if (IsShown)
-        {
-            gameObject.SetActive(false);
+        gameObject.SetActive(false);
 
-            if (EventSystemModifier.Current.IsUsingMouse == false)
-            {
-                var trySelect = SelectOnDefocus;
-                if (trySelect != null)
-                    trySelect.Select();
-            }
+        if (EventSystem.current == null) return;
+
+        if (EventSystemModifier.Current.IsUsingMouse)
+            EventSystem.current.SetSelectedGameObject(null);
+        else
+        {
+            var trySelect = SelectOnDefocus;
+            if (trySelect == null)
+                EventSystem.current.SetSelectedGameObject(null);
+            else
+                trySelect.Select();
         }
     }
 

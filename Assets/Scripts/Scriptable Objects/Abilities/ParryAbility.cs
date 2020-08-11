@@ -12,19 +12,17 @@ public class ParryAbility : Ability, IAttackListener
     public Timestamps timestamps;
     public BlockAbility.BlockConfig blockConfig;
 
-    private bool isUsing;
     private Coroutine routine;
 
     public override bool CanUse(InputPhase phase) => 
         phase == InputPhase.down &&
-        isUsing == false &&
+        IsUsing == false &&
         characterComponents.characterSheet.HasResources(cost);
 
     public override void ForceEndUse()
     {
-        if (isUsing)
+        if (IsUsing)
         {
-            //this is stage 2 but with fade
             EndParry(true);
             EndAbility();
         }
@@ -39,17 +37,16 @@ public class ParryAbility : Ability, IAttackListener
     {
         characterComponents.characterSheet.IncreaseResources(-cost);
         characterComponents.animator.SetTrigger(AnimationConstants.EnumToID(parryTrigger));
-        isUsing = true;
+        IsUsing = true;
 
         if (routine != null)
             StopCoroutine(routine);
         routine = StartCoroutine(ParryRoutine());
     }
 
-
-    public void OnAttacked(int damage, Vector3 contactPoint, out DefenceFeedback feedback)
+    public void OnAttacked(int damage, Vector3 contactPoint, CharacterComponents character, out DefenceFeedback feedback)
     {
-        BlockAbility.BlockAttack(characterComponents.movement, characterComponents.attackIndicator,
+        BlockAbility.BlockAttack(characterComponents.attackIndicator,
             blockConfig, damage, contactPoint, out feedback);
     }
 
@@ -87,7 +84,7 @@ public class ParryAbility : Ability, IAttackListener
     private void EndAbility()
     {
         characterComponents.characterSheet.RemoveEffect(useEffect);
-        isUsing = false;
+        IsUsing = false;
         if (routine != null)
             StopCoroutine(routine);
     }

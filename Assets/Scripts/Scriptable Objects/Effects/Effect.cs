@@ -35,4 +35,6 @@ public abstract class Effect : ScriptableObject
 
     public abstract void Apply(CharacterSheet target);
     public abstract void Remove(CharacterSheet target);
+
+    public virtual T IsA<T>() where T : Effect => this as T;
 }

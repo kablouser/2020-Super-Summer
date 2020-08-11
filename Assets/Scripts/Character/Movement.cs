@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Movement : MonoBehaviour
 {
-    public const float lookUpperLimit = 40;
+    public const float lookUpperLimit = 70;
     public const float lookLowerLimit = -100;
 
     public const float moveAcceleration = 7;
@@ -19,7 +21,10 @@ public class Movement : MonoBehaviour
     public delegate void CollisionEvent(Collision collision);
 
     public event CollisionEvent OnCollisionEvent;
+    public float GetCurrentAngleY { get => bodyRotator.eulerAngles.y; }
+    public float GetSpineAngleX { get; private set; }
 
+    [Header("References")]
     public CharacterComponents characterComponents;
 
     public Transform head;
@@ -27,15 +32,20 @@ public class Movement : MonoBehaviour
     public Collider movingCollider;
     public PhysicMaterial movingMaterial;
     public PhysicMaterial staticMaterial;
+
+    [Header("Parameters")]
     public float movementSpeed = 4;
     public float rotateSpeed = 200;
+
+    public float lookUpBias = 0.5f;
+
+    public ReadOnlyCollection<Collider> GetTouchingColliders => touchingColliders.AsReadOnly();
 
     private Rigidbody rigidbodyComponent;
     private Animator animator;
 
-    private Quaternion headForward;
-    private Quaternion modelTargetRotation;
     private Vector3 move;
+    private Quaternion bodyTargetRotation;    
 
     private bool locked;
     private Vector3 lockedMove;
@@ -45,6 +55,10 @@ public class Movement : MonoBehaviour
     private Vector3 groundNormalFoward;
 
     private Vector3 animationMove;
+    private Transform spineBone;
+
+    [SerializeField]
+    private List<Collider> touchingColliders;
 
     public void SetMove(float moveX, float moveZ)
     {
@@ -53,6 +67,7 @@ public class Movement : MonoBehaviour
         if (1 < move.sqrMagnitude)
             move.Normalize();
     }
+
     public void SetLockedMove(float moveX, float moveZ)
     {
         locked = true;
@@ -62,41 +77,53 @@ public class Movement : MonoBehaviour
         if (1 < lockedMove.sqrMagnitude)
             lockedMove.Normalize();
     }
+
     public void Unlock()
     {
         locked = false;
     }
+
     public void SetLook(ref float angleX, float angleY)
     {
-        modelTargetRotation = Quaternion.Euler(0, angleY, 0);
+        bodyTargetRotation = Quaternion.Euler(0, angleY, 0);
+
+        angleX = Mathf.Clamp(angleX, lookLowerLimit, lookUpperLimit);
+        GetSpineAngleX = angleX < 0 ? angleX * lookUpBias : angleX;
+
         if (head != null)
-        {
-            angleX = Mathf.Clamp(angleX, lookLowerLimit, lookUpperLimit);
             head.eulerAngles = new Vector3(angleX, angleY, 0);
-            headForward = Quaternion.Euler(0, angleY, 0);
-        }
     }
+
     private void SetFriction(bool isEnabled)
     {
         movingCollider.material = isEnabled ? staticMaterial : movingMaterial;
     }
+
     private void Awake()
     {
         rigidbodyComponent = characterComponents.rigidbodyComponent;
         animator = characterComponents.animator;
+        spineBone = animator.GetBoneTransform(HumanBodyBones.Spine);
+
+        touchingColliders = new List<Collider>();
     }
+
+    private void OnEnable()
+    {
+        bodyTargetRotation = bodyRotator.rotation;
+    }
+
     private void OnDisable()
     {
         animationMove = Vector3.zero;
         UpdateAnimationMove(Vector3.zero, Vector3.zero);
         SetFriction(true);
     }
-    private void Update()
-    {
-        bodyRotator.rotation = Quaternion.RotateTowards(bodyRotator.rotation, modelTargetRotation, rotateSpeed * Time.deltaTime);
-    }
+
     private void FixedUpdate()
     {
+        bodyRotator.rotation = Quaternion.RotateTowards(bodyRotator.rotation, bodyTargetRotation, rotateSpeed * Time.deltaTime);
+
         Vector3 currentVelocity = rigidbodyComponent.velocity;
 
         Vector3 moveInput = locked ? lockedMove : move;
@@ -113,7 +140,7 @@ public class Movement : MonoBehaviour
             SetFriction(false);
 
             //rotate and scale by movementSpeed
-            Vector3 targetDirection = headForward * moveInput;
+            Vector3 targetDirection = bodyTargetRotation * moveInput;
             float speed = movementSpeed;
 
             if (grounded)
@@ -130,7 +157,7 @@ public class Movement : MonoBehaviour
             }
 
             //limit acceleration
-            Vector3 impulse = targetDirection * speed;// Vector3.Lerp(currentVelocity, targetDirection * speed, moveAcceleration * Time.fixedDeltaTime);
+            Vector3 impulse = targetDirection * speed;
 
             //this is only horizontal            
             impulse.y = 0;
@@ -149,9 +176,24 @@ public class Movement : MonoBehaviour
             rigidbodyComponent.AddForce(impulse, ForceMode.Impulse);
         }
     }
+    private void LateUpdate()
+    {
+        //rotate spine bone's position around ...
+        spineBone.RotateAround(spineBone.position,
+            //the x axis of bodyRotator
+            bodyRotator.rotation * Vector3.right,
+            GetSpineAngleX);
+        //we don't rotate around the x axis of spineBone
+    }
 
-    private void OnCollisionEnter(Collision collision) =>
+    private void OnCollisionEnter(Collision collision)
+    {
         OnCollisionEvent?.Invoke(collision);
+
+        var colider = collision.collider;
+        if (touchingColliders.Contains(colider) == false)
+            touchingColliders.Add(colider);
+    }
 
     private void OnCollisionStay(Collision collisionInfo)
     {
@@ -167,6 +209,11 @@ public class Movement : MonoBehaviour
                 groundGradient = Mathf.Deg2Rad * (90 - Vector3.Angle(contact.normal, groundNormalFoward));
                 break;
             }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        touchingColliders.Remove(collision.collider);
     }
 
     private void UpdateAnimationMove(Vector3 currentVelocity, Vector3 moveInput)

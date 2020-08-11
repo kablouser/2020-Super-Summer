@@ -78,6 +78,7 @@ public class Projectile : MonoBehaviour
             tag.attachedCharacter.LandAttack(
                 damage,
                 other.ClosestPoint(transform.position),
+                shooter.characterComponents,
                 heft,
                 out _);
         }

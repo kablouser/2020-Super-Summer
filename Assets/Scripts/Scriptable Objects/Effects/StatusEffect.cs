@@ -24,11 +24,11 @@ public class StatusEffect : Effect
 
     public bool IsResourcesDrained(CharacterSheet characterSheet)
     {
-        if (0 < regenResources.health && characterSheet.GetResource(Resource.health) <= 0)
+        if (regenResources.health < 0 && characterSheet.GetResource(Resource.health) <= 0)
             return true;
-        else if (0 < regenResources.focus && characterSheet.GetResource(Resource.focus) <= 0)
+        else if (regenResources.focus < 0 && characterSheet.GetResource(Resource.focus) <= 0)
             return true;
-        else if (0 < regenResources.stamina && characterSheet.GetResource(Resource.stamina) <= 0)
+        else if (regenResources.stamina < 0 && characterSheet.GetResource(Resource.stamina) <= 0)
             return true;
         else return false;
     }

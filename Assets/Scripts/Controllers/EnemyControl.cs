@@ -1,12 +1,9 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
 
-using static Fighter;
-
-public class EnemyControl : MonoBehaviour
+public class EnemyControl : MonoBehaviour, CharacterSheet.IAttackListener
 {
     [System.Serializable]
     public struct AbilityManual
@@ -27,12 +24,15 @@ public class EnemyControl : MonoBehaviour
     /// </summary>
     public const float rangeVariation = 0.15f;
 
+    public enum AITeam { defaultTeam }
+
     public bool IsNavigating => agent.stoppingDistance < agent.remainingDistance;
 
     public EnemyComponents enemyComponents;
+    public AITeam team;
+    public AbilityManual neutralMove = new AbilityManual() { choiceWeighting = 1f, engageRange = 4f, holdDuration = 1f, repeatable = false };
+    public ResourceBars resourceBars;
 
-    public AbilityManual neutralMove = new AbilityManual() { choiceWeighting = 1f, engageRange = 4f, holdDuration = 1f, repeatable = false };    
-        
     private Movement movement;
     private Equipment equipment;
     private Fighter fighter;
@@ -42,11 +42,46 @@ public class EnemyControl : MonoBehaviour
     private bool currentActionFinished = false;
 
     //controls fields
-    private float lookUp;
     [SerializeField]
     private Fighter currentTarget = null;
 
     private bool currentTargetAlive => currentTarget != null && currentTarget.enabled;
+
+    /// <summary>
+    /// This function allows the enemy to aggro
+    /// </summary>
+    /// 
+
+    public void OnAttacked(int damage, Vector3 contactPoint, CharacterComponents character, out CharacterSheet.DefenceFeedback feedback)
+    {
+        feedback = CharacterSheet.DefenceFeedback.NoDefence;
+        SenseNewThreat(character);        
+    }
+
+    public void SenseNewThreat(CharacterComponents character)
+    {
+        if (character == null) return;
+
+        if (character is EnemyComponents enemyAI)
+        {
+            if (team == enemyAI.enemyControl.team)
+                //same team, friendly fire, dont retaliate...
+                //or maybe do retaliate depending on the team type and ai
+                return;
+        }
+
+        if (currentTargetAlive)
+        {
+            //is the attacker closer?
+            if ((transform.position - character.transform.position).sqrMagnitude <
+                (transform.position - currentTarget.transform.position).sqrMagnitude)
+                currentTarget = character.fighter;
+        }
+        else
+        {
+            currentTarget = character.fighter;
+        }
+    }
 
     private void Awake()
     {
@@ -57,15 +92,21 @@ public class EnemyControl : MonoBehaviour
         movement.SetMove(0, 0);
 
         agent.updatePosition = agent.updateRotation = false;
+
+        resourceBars.Setup(enemyComponents.characterSheet);
+
+        movement.OnCollisionEvent += MovementCollision;
     }
 
     private void Start()
     {
         equipment.AutoEquip();
         currentAction = StartCoroutine(RandomAbilityRoutine());
-        //currentActionFinished = false;
-        //movement.SetMove(0, -0.3f);
-        //fighter.UseAbility(AbilityIndex.L2, true, out _);
+    }
+
+    private void OnEnable()
+    {
+        enemyComponents.characterSheet.AddAttackListener(this);
     }
 
     private void OnDisable()
@@ -73,15 +114,44 @@ public class EnemyControl : MonoBehaviour
         movement.SetMove(0, 0);
         if (currentAction != null) StopCoroutine(currentAction);
         currentActionFinished = true;
+
+        enemyComponents.characterSheet.RemoveAttackListener(this);
+        resourceBars.gameObject.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        movement.OnCollisionEvent -= MovementCollision;
     }
 
     private void FixedUpdate()
     {
-        if (currentActionFinished)
+        if (currentActionFinished && currentTargetAlive)
         {
             if (currentAction != null) StopCoroutine(currentAction);
             currentAction = StartCoroutine(RandomAbilityRoutine());
         }
+
+        if(currentTargetAlive)
+        {
+            resourceBars.gameObject.SetActive(true);
+            resourceBars.UpdateVisuals();
+        }
+        else
+        {
+            resourceBars.gameObject.SetActive(false);
+        }
+    }
+
+    private void MovementCollision(Collision collision)
+    {
+        var rigidbody = collision.rigidbody;
+        if (rigidbody == null) return;
+
+        CharacterComponents character = rigidbody.GetComponent<CharacterComponents>();
+        if (character == null) return;
+
+        SenseNewThreat(character);
     }
 
     private IEnumerator RandomAbilityRoutine()
@@ -100,9 +170,9 @@ public class EnemyControl : MonoBehaviour
             float totalWeighting = neutralMove.choiceWeighting;
 
             int index = 0;
-            foreach(Ability ability in fighter.currentAbilities)
+            foreach (Ability ability in fighter.currentAbilities)
             {
-                if(ability != null)
+                if (ability != null)
                 {
                     AbilityManual getManual = ability.abilityManual;
                     totalWeighting += getManual.choiceWeighting;
@@ -165,19 +235,24 @@ public class EnemyControl : MonoBehaviour
                 Vector3 difference = transform.position - targetPosition;
 
                 Vector3 desiredDestination;
+                
                 if (rotateDirection == 0)
                     desiredDestination = targetPosition + difference.normalized * chosenAbility.engageRange * rangeVariance;
                 else
                     desiredDestination = targetPosition +
                         Quaternion.Euler(0, rotateDirection * 10f, 0) * difference.normalized * chosenAbility.engageRange * rangeVariance;
+                desiredDestination.y = targetPosition.y;
 
                 agent.nextPosition = transform.position;
-                agent.destination = desiredDestination;
+                if (NavMesh.SamplePosition(desiredDestination, out NavMeshHit hit, 2 * agent.height, NavMesh.AllAreas))
+                    agent.destination = hit.position;
+                else
+                    agent.destination = desiredDestination;
 
                 //look at target
                 Vector3 desiredVelocity = movement.bodyRotator.InverseTransformDirection(agent.desiredVelocity);
-                movement.SetLook(ref lookUp, Quaternion.LookRotation(-difference).eulerAngles.y);
                 movement.SetMove(desiredVelocity.x, desiredVelocity.z);
+                LookInDirection(-difference);
 
                 if (usedAbility == false &&
                     difference.sqrMagnitude <=
@@ -224,7 +299,7 @@ public class EnemyControl : MonoBehaviour
     {
         agent.nextPosition = transform.position;
         agent.destination = destination;
-        if(isDirect)
+        if (isDirect)
             movement.SetMove(0, 1);
 
         while (agent.pathPending) yield return CoroutineConstants.waitFixed;
@@ -232,7 +307,7 @@ public class EnemyControl : MonoBehaviour
         do
         {
             if (isDirect)
-                movement.SetLook(ref lookUp, Quaternion.LookRotation(agent.desiredVelocity).eulerAngles.y);
+                LookInDirection(agent.desiredVelocity);
             else
             {
                 Vector3 desiredVelocity = agent.desiredVelocity;
@@ -241,8 +316,19 @@ public class EnemyControl : MonoBehaviour
             agent.nextPosition = transform.position;
             yield return CoroutineConstants.waitFixed;
         }
-        while(IsNavigating);
+        while (IsNavigating);
 
         movement.SetMove(0, 0);
+    }
+
+    private void LookInDirection(Vector3 direction)
+    {
+        if (direction == Vector3.zero)
+            return;
+
+        Vector3 euler = Quaternion.LookRotation(direction).eulerAngles;        
+        if(180 < euler.x)
+            euler.x -= 360;
+        movement.SetLook(ref euler.x, euler.y);
     }
 }

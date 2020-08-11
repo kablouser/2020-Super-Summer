@@ -4,9 +4,11 @@ public class LifeToggler : MonoBehaviour
 {
     public const float deathDelay = 2.0f;
 
+    public CharacterComponents character;
+
     public MonoBehaviour[] aliveBehaviours;
-    public GameObject deathEffect;
-    public bool destroyOnDeath;
+    public RagdollController ragdollPrefab;    
+    public bool isPlayer;
 
     private bool started = false;
     private bool currentAlive;
@@ -20,11 +22,19 @@ public class LifeToggler : MonoBehaviour
 
         currentAlive = isAlive;
 
-        foreach(MonoBehaviour behaviour in aliveBehaviours)
+        foreach (MonoBehaviour behaviour in aliveBehaviours)
             behaviour.enabled = isAlive;
-        deathEffect.SetActive(!isAlive);
 
-        if(destroyOnDeath && isAlive == false)
-            Destroy(gameObject, deathDelay);
+        if (isAlive == false)
+        {
+            RagdollController newRagdoll = Instantiate(ragdollPrefab);
+            newRagdoll.CopyPose(character.animator, character.equipment);
+
+            if (isPlayer && character.movement.head != null)
+                //keep the camera
+                character.movement.head.SetParent(null);
+
+            Destroy(gameObject);
+        }
     }
 }

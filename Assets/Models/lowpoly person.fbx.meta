@@ -478,8 +478,8 @@ ModelImporter:
       name: rig|Ricochet
       takeName: rig|Ricochet
       internalID: 0
-      firstFrame: 1
-      lastFrame: 120
+      firstFrame: 15
+      lastFrame: 105
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -749,7 +749,7 @@ ModelImporter:
       maskType: 3
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
-    isReadable: 0
+    isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1

@@ -15,8 +15,11 @@ MonoBehaviour:
   grams: 100
   volume: 100
   icon: {fileID: 21300000, guid: b58f79c296c49a8439da394232faa6b5, type: 3}
-  description: "Button 1:\n\t[tap] shield bash\n\t[hold] shield charge\n\nButton
-    2:\n\t[hold] block"
+  colorPicker: {r: 0.4117647, g: 0.43137255, b: 1, a: 0}
+  description: "Left Click (Left Hand) / Right Click (Right Hand):\n\t[tap] shield
+    bash (uses <color=#48C745>stamina</color>)\n\t[hold] shield charge (uses <color=#48C745>stamina</color>,
+    <color=#696EFF>focus</color>)\n\nQ (Left Hand) /E (Right Hand):\n\t[hold] block
+    (uses <color=#48C745>stamina</color>)"
   armsPrefab: {fileID: 635308527410128375, guid: 2039961f1ece8774a948cbbc34e62a21,
     type: 3}
   usableConfigs:

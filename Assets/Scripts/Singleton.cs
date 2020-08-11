@@ -9,6 +9,14 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         if (Current == null)
             Current = this as T;
         else
-            Debug.LogWarning("Multiple instances of " + GetType().Name, this);
+            OnMultipleInstance();
+    }
+
+    /// <summary>
+    /// Called when another singleton already exists before this script.
+    /// </summary>
+    protected virtual void OnMultipleInstance()
+    {
+        Debug.LogWarning("Multiple instances of " + GetType().Name, this);
     }
 }

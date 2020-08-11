@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 using static Fighter;
-using static CharacterSheet;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -30,13 +28,9 @@ public class PlayerControl : MonoBehaviour
     }
 
     public PlayerComponents playerComponents;
-    public InteractionPanel interactionPanel;
-    public GameObject EscapePanel;
+    public PlayerHUDLinker.HUDInterface hudObjects;
     public LayerMask interactionMask;
-
-    public Slider healthBar;
-    public Slider staminaBar;
-    public Slider focusBar;
+    public ChaseCamera chaseCamera;
 
     private Movement movement;
     private Equipment equipment;
@@ -103,8 +97,9 @@ public class PlayerControl : MonoBehaviour
         if (context.phase != InputActionPhase.Performed)
             return;
 
-        EscapePanel.SetActive(!EscapePanel.activeSelf);
+        SetAllPanels(!hudObjects.EscapePanel.activeSelf);
     }
+
     private void ProcessHandInput(AbilityIndex index, InputActionPhase phase)
     {
         if (downAction.isNew && index < downAction.index)
@@ -121,7 +116,8 @@ public class PlayerControl : MonoBehaviour
         equipment = playerComponents.equipment;
         fighter = playerComponents.fighter;
         playerInput = playerComponents.playerInput;
-        characterSheet = playerComponents.characterSheet;        
+        characterSheet = playerComponents.characterSheet;
+        hudObjects.resourceBars.Setup(characterSheet);
     }
     private void Start()
     {
@@ -130,13 +126,21 @@ public class PlayerControl : MonoBehaviour
     private void OnEnable()
     {
         playerInput.enabled = true;
+        currentLook.y = movement.GetCurrentAngleY;
+        SetAllPanels(false);
     }
     private void OnDisable()
     {
         movement.SetMove(0, 0);
         playerInput.enabled = false;
         //make sure resource bars are correct when killed
-        UpdateResourceBars();
+        hudObjects.resourceBars.UpdateVisuals();
+
+        //close inventory when killed
+        SetEscapePanel(false);
+        //auto open menu panel though
+        SetMenuPanel(true, true);
+        EventSystemModifier.Current.SetMenuMode(true);
     }
     private void Update()
     {
@@ -151,14 +155,13 @@ public class PlayerControl : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        //update resource bars
-        UpdateResourceBars();
+        hudObjects.resourceBars.UpdateVisuals();
 
-        if (Physics.Raycast(movement.head.position, movement.head.forward,
-            out RaycastHit hitInfo, InteractionRange, interactionMask) == false)
+        if (Physics.Raycast(chaseCamera.transform.position, chaseCamera.transform.forward,
+            out RaycastHit hitInfo, InteractionRange + chaseCamera.CurrentDistance, interactionMask) == false)
         {
             interactCache.interactObject = null;
-            interactionPanel.Hide();
+            hudObjects.interactionPanel.Hide();
             return;
         }
 
@@ -172,7 +175,7 @@ public class PlayerControl : MonoBehaviour
             else
                 interactCache = newCache;
 
-            interactionPanel.SetText("Pick Up "+droppedItem.GetItem.name);
+            hudObjects.interactionPanel.SetText("Pick Up "+droppedItem.GetItem.name);
         }
 
         //add other sorts of interactions here ...
@@ -181,18 +184,25 @@ public class PlayerControl : MonoBehaviour
     private bool HasCacheChanged(InteractCache newCache) =>
         newCache.type != interactCache.type || newCache.interactObject != interactCache.interactObject;
 
-    private void UpdateResourceBars()
+    private void SetAllPanels(bool isActive)
     {
-        float barFill = characterSheet.GetResource(Resource.health) / (float)characterSheet.GetResourceMax(Resource.health);
-        if (healthBar.value != barFill)
-            healthBar.value = barFill;
+        SetEscapePanel(isActive);
+        SetMenuPanel(isActive, false);
+        EventSystemModifier.Current.SetMenuMode(isActive);
+    }
 
-        barFill = characterSheet.GetResource(Resource.stamina) / (float)characterSheet.GetResourceMax(Resource.stamina);
-        if (staminaBar.value != barFill)
-            staminaBar.value = barFill;
+    private void SetEscapePanel(bool isActive)
+    {
+        if(hudObjects.EscapePanel != null)
+            hudObjects.EscapePanel.SetActive(isActive);
+    }
 
-        barFill = characterSheet.GetResource(Resource.focus) / (float)characterSheet.GetResourceMax(Resource.focus);
-        if (focusBar.value != barFill)
-            focusBar.value = barFill;
+    private void SetMenuPanel(bool isActive, bool showMenuButtons)
+    {
+        if (hudObjects.MenuPanel != null)
+        {
+            hudObjects.MenuPanel.gameObject.SetActive(isActive);
+            hudObjects.MenuPanel.ShowMenuButtons(showMenuButtons);
+        }
     }
 }

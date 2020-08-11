@@ -83,20 +83,17 @@ public class InventoryPanel : Panel
     public override void Hide()
     {
         base.Hide();
-        if(EventSystemModifier.Current.IsUsingMouse)
-            EventSystemModifier.Current.SetMouseVisible(false);
     }
 
     protected override void Show(RectTransform targetPosition)
     {
         base.Show(targetPosition);
-        if (EventSystemModifier.Current.IsUsingMouse)
-            EventSystemModifier.Current.SetMouseVisible(true);
     }
 
     private void OnEnable()
     {
         Show(null);
+        informationPanel.Clear();
     }
 
     private void OnDisable()

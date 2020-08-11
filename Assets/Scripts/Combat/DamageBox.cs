@@ -48,6 +48,7 @@ public class DamageBox : MonoBehaviour
 
             tag.attachedCharacter.LandAttack(damage,
                 owner.characterComponents.CenterPosition,
+                owner.characterComponents,
                 heft,
                 out int ricochet);
             OnLandAttack?.Invoke(tag.attachedCharacter.characterComponents);

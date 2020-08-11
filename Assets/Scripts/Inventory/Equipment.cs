@@ -139,6 +139,13 @@ public class Equipment : Inventory
         return isProblem == false;
     }
 
+    public void UnpackEquippedIntoWorld()
+    {
+        foreach (var equipped in equippedArms.array)
+            if(equipped != null)
+                equipped.UnpackIntoWorld();
+    }
+
     protected virtual void Awake()
     {
         fighter = characterComponents.fighter;

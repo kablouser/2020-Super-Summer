@@ -5,7 +5,7 @@ public class Timestamps : ScriptableObject
 {
     [SerializeField]
     [ContextMenuItem("Convert frames to time", "ConvertFramesToTime")]
-    private float[] times;
+    private float[] times = null;
 
     public WaitForSeconds GetNextWait(int index)
     {

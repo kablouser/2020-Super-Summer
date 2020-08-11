@@ -7,7 +7,7 @@ public abstract class ChainableAbility : Ability
     protected bool ChainIsUsing => holdToChain != null && holdToChain.IsUsing;
 
     [Header("Hold input will chain into this ability")]
-    [SerializeField] private Ability holdToChain;
+    [SerializeField] private Ability holdToChain = null;
     private float startUseTime;
 
     public override void Setup(CharacterComponents characterComponents, bool mirror)

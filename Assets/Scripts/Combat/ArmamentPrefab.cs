@@ -18,6 +18,10 @@ public class ArmamentPrefab : MonoBehaviour
     public bool flipOnLeftHand;
     public Transform flipTransform;
     public IdleAnimation idleAnimation;
+    [Tooltip("Nullable")]
+    public DamageBox damageBox;
+    [Tooltip("Not nullable")]
+    public Collider levelCollider;
     [Tooltip("Should be size 4 - unless you have a custom controls")]
     public Ability[] abilitySet = new Ability[4];
 
@@ -91,6 +95,24 @@ public class ArmamentPrefab : MonoBehaviour
             flipTransform.localScale = new Vector3(-1, 1, 1);
         else
             flipTransform.localScale = Vector3.one;
+    }
+
+    /// <summary>
+    /// Remove armament from equiper, and adds rigidbody to roll around in the real world.
+    /// For keeping the ragdolls company.
+    /// </summary>
+    public void UnpackIntoWorld()
+    {
+        transform.SetParent(null);
+        gameObject.AddComponent<Rigidbody>().mass = 2;
+        if (damageBox != null)
+            damageBox.gameObject.SetActive(false);
+        levelCollider.gameObject.SetActive(true);
+
+        foreach (Ability ability in abilitySet)
+            ability.gameObject.SetActive(false);
+
+        enabled = false;
     }
 
     private void Update()

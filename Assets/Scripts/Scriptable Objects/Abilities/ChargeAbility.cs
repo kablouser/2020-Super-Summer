@@ -14,7 +14,7 @@ public class ChargeAbility : Ability, CharacterSheet.IAttackListener
     [Tooltip("The velocity applied to enemies hit")]
     public float impactVelocity;
     public Timestamps timestamps;
-    
+
     public BlockAbility.BlockConfig blockConfig;
 
     private Coroutine chargeRoutine;
@@ -47,7 +47,7 @@ public class ChargeAbility : Ability, CharacterSheet.IAttackListener
 
         characterComponents.characterSheet.RemoveEffect(useEffect);
         characterComponents.characterSheet.RemoveAttackListener(this);
-        if(interrupt)
+        if (interrupt)
             characterComponents.attackIndicator.FadeOutBlockIndicator();
         else
             characterComponents.attackIndicator.DisableBlockIndicator();
@@ -63,7 +63,7 @@ public class ChargeAbility : Ability, CharacterSheet.IAttackListener
 
     public override void Use(Fighter.InputPhase phase)
     {
-        if(phase == Fighter.InputPhase.down)
+        if (phase == Fighter.InputPhase.down)
         {
             characterComponents.characterSheet.IncreaseResources(-cost);
             IsUsing = true;
@@ -77,9 +77,9 @@ public class ChargeAbility : Ability, CharacterSheet.IAttackListener
         }
     }
 
-    public void OnAttacked(int damage, Vector3 contactPoint, out CharacterSheet.DefenceFeedback feedback)
+    public void OnAttacked(int damage, Vector3 contactPoint, CharacterComponents character, out CharacterSheet.DefenceFeedback feedback)
     {
-        BlockAbility.BlockAttack(characterComponents.movement, characterComponents.attackIndicator,
+        BlockAbility.BlockAttack(characterComponents.attackIndicator,
             blockConfig, damage, contactPoint, out feedback);
     }
 
@@ -93,6 +93,20 @@ public class ChargeAbility : Ability, CharacterSheet.IAttackListener
         characterComponents.attackIndicator.EnableBlockIndicator(blockConfig.blockAngle);
         //force move forward
         characterComponents.movement.SetLockedMove(0, 1);
+        var touching = characterComponents.movement.GetTouchingColliders;
+        for(int i = 0; i < touching.Count; i++)
+        {
+            if (touching[i] == null) continue;
+
+            var touchingRigidbody = touching[i].attachedRigidbody;
+            if (touchingRigidbody == null) continue;
+
+            HitRigidbody(touchingRigidbody);
+            if (IsUsing == false)
+                //we've hit something
+                yield return null;
+        }
+
         characterComponents.movement.OnCollisionEvent += OnChargeCollision;
 
         yield return timestamps.GetNextWait(1);
@@ -105,40 +119,47 @@ public class ChargeAbility : Ability, CharacterSheet.IAttackListener
         Rigidbody hitRigidbody = collision.rigidbody;
         if (hitRigidbody == null) return;
 
+        HitRigidbody(hitRigidbody);
+    }
+
+    private void HitRigidbody(Rigidbody hitRigidbody)
+    {
         CharacterSheet hitCharacter = hitRigidbody.GetComponent<CharacterSheet>();
-        if (hitCharacter != null)
+        if (hitCharacter == null) return;
+
+        Vector3 directionToTarget =
+            hitRigidbody.position -
+            characterComponents.rigidbodyComponent.position;
+        directionToTarget.Normalize();
+
+        //ensure the target is within block angle
+        if (Vector3.Dot(directionToTarget,
+            characterComponents.movement.bodyRotator.forward)
+            < Mathf.Cos(blockConfig.blockAngle))
+            return;
+
+        //apply damage
+        int calculateDamage = characterComponents.characterSheet.
+            CalculateAttackDamage(damage);
+        hitCharacter.LandAttack(
+            calculateDamage,
+            characterComponents.CenterPosition,
+            characterComponents,
+            heft, out int ricochet);
+
+        if (heft < ricochet)
         {
-            Vector3 directionToTarget =
-                hitRigidbody.position -
-                characterComponents.rigidbodyComponent.position;
-            directionToTarget.Normalize();
-
-            //ensure the target is within block angle
-            if (Vector3.Dot(directionToTarget,
-                characterComponents.movement.bodyRotator.forward)
-                < Mathf.Cos(blockConfig.blockAngle))
-                return;
-
-            //apply damage
-            int calculateDamage = characterComponents.characterSheet.
-                CalculateAttackDamage(damage);
-            hitCharacter.LandAttack(
-                calculateDamage,
-                characterComponents.CenterPosition, heft, out int ricochet);
-
-            if (heft < ricochet)
-            {
-                characterComponents.fighter.RicochetStagger();
-                return;
-            }
-
-            //move opponent            
-            //just to prevent weird interactions
-            if (directionToTarget == Vector3.zero)
-                directionToTarget = Vector3.forward;
-            hitRigidbody.velocity = directionToTarget * impactVelocity;
-
-            EndUse(false);
+            //call backs will end use of this ability
+            characterComponents.fighter.RicochetStagger();
+            return;
         }
+
+        //move opponent            
+        //just to prevent weird interactions
+        if (directionToTarget == Vector3.zero)
+            directionToTarget = Vector3.forward;
+        hitRigidbody.velocity = directionToTarget * impactVelocity;
+
+        EndUse(false);
     }
 }

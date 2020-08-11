@@ -106,7 +106,7 @@ public class ItemDisplayer : MonoBehaviour,
     //selection
     public void OnSelect(BaseEventData eventData)
     {
-        master.SelectEntry(this);
+        master.SelectEntry(this);        
     }
 
     //confirm button(s) - can either show controls or end dragging

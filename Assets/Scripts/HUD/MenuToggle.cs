@@ -6,7 +6,8 @@ using TMPro;
 public class MenuToggle : MonoBehaviour
 {
     [ContextMenuItem("Update", "UpdateState")]
-    public bool isOn;
+    [SerializeField]
+    private bool isOn;
 
     public Button toggleButton;
 
@@ -20,17 +21,13 @@ public class MenuToggle : MonoBehaviour
 
     public GameObject toggleGameobject;
 
-    private void Awake()
+    public void ShowMenuButtons(bool isOn)
     {
-        toggleButton.onClick.AddListener(Toggle);
+        this.isOn = isOn;
+        UpdateState();
     }
 
-    private void OnDestroy()
-    {
-        toggleButton.onClick.RemoveListener(Toggle);
-    }
-
-    private void Toggle()
+    public void ToggleButton()
     {
         isOn = !isOn;
         UpdateState();

@@ -89,7 +89,7 @@ public class CharacterSheet : MonoBehaviour
     }
     public interface IAttackListener
     {
-        void OnAttacked(int damage, Vector3 contactPoint, out DefenceFeedback feedback);
+        void OnAttacked(int damage, Vector3 contactPoint, CharacterComponents character, out DefenceFeedback feedback);
     }
 
     public enum Attribute { moveSpeed, rotateSpeed, MAX }
@@ -97,7 +97,9 @@ public class CharacterSheet : MonoBehaviour
 
     public CharacterComponents characterComponents;
 
+    [ContextMenuItem("Recharge", "InspectorRecharge")]
     [SerializeField] private AttributeRecord[] attributes = new AttributeRecord[(int)Attribute.MAX];
+    [ContextMenuItem("Recharge", "InspectorRecharge")]
     [SerializeField] private ResourceRecord[] resources =
         new ResourceRecord[(int)Resource.MAX] {
             new ResourceRecord(100, 0),
@@ -114,7 +116,7 @@ public class CharacterSheet : MonoBehaviour
     private List<Effect.AppliedEffect> appliedEffects;
     private List<IAttackListener> attackListeners;
 
-    public void LandAttack(int damage, Vector3 origin, int heft, out int ricochet)
+    public void LandAttack(int damage, Vector3 origin, CharacterComponents attacker, int heft, out int ricochet)
     {
         ricochet = 0;
         if (enabled == false) return;
@@ -125,7 +127,7 @@ public class CharacterSheet : MonoBehaviour
 
         foreach (var listener in attackListeners)
         {
-            listener.OnAttacked(damage, origin, out DefenceFeedback feedback);
+            listener.OnAttacked(damage, origin, attacker, out DefenceFeedback feedback);
 
             ricochet += feedback.ricochet;
             reduction += feedback.reduction;
@@ -223,6 +225,12 @@ public class CharacterSheet : MonoBehaviour
         IncreaseResourceRegen(Resource.focus, group.focus);
     }
 
+    public void SetResourceMax(Resource resource, int value)
+    {
+        resources[(int)resource].max = value;
+        ClampResource(resource);
+    }
+
     /// <summary>
     /// updates the max resources, and fills them up to max
     /// </summary>
@@ -279,6 +287,9 @@ public class CharacterSheet : MonoBehaviour
 
     public void AddAttackListener(IAttackListener listener)
     {
+        if (attackListeners == null)
+            Awake();
+
         if (attackListeners.Contains(listener) == false)
             attackListeners.Add(listener);
         else
@@ -309,8 +320,10 @@ public class CharacterSheet : MonoBehaviour
         if (regenDecimals == null || regenDecimals.Length != (int)Resource.MAX)
             regenDecimals = new float[(int)Resource.MAX];
 
-        appliedEffects = new List<Effect.AppliedEffect>();
-        attackListeners = new List<IAttackListener>();
+        if(appliedEffects == null)
+            appliedEffects = new List<Effect.AppliedEffect>();
+        if (attackListeners == null)
+            attackListeners = new List<IAttackListener>();
     }
 
     private void FixedUpdate()
@@ -372,12 +385,6 @@ public class CharacterSheet : MonoBehaviour
                 movement.rotateSpeed = 0 < calculateSpeed ? calculateSpeed : 0;
                 break;
         }
-    }
-
-    private void SetResourceMax(Resource resource, int value)
-    {
-        resources[(int)resource].max = value;
-        ClampResource(resource);
     }
 
     private void ClampResource(Resource resource)

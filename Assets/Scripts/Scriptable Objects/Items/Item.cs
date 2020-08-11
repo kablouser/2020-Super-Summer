@@ -7,6 +7,6 @@ public class Item : ScriptableObject
     [Tooltip("cm^3")]
     public int volume;
     public Sprite icon;
-    [TextArea(1,5)]
+    [TextArea(1, 20)]
     public string description;
 }

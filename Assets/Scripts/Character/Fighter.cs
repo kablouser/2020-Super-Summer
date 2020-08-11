@@ -229,6 +229,7 @@ public class Fighter : MonoBehaviour
     {
         poiseDuration = basePoise;
         isPoiseResetted = true;
+        modelMaterialChanger.StopFlicker();
     }
 
     private void Awake()

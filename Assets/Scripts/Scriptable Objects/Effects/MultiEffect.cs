@@ -26,20 +26,28 @@ public class MultiEffect : Effect
                 effect.Remove(target);
     }
 
-    public T FindAtomic<T>()
+    public T FindSubEffect<T>() where T : Effect
     {
         foreach (Effect effect in effects)
             if (effect is T t)
                 return t;
-        return default;
+        return null;
     }
 
-    public T FindAtomic<T>(System.Func<T, bool> match)
+    public T FindSubEffect<T>(System.Func<T, bool> match) where T : Effect
     {
         foreach (Effect effect in effects)
             if (effect is T t && match(t))
                 return t;
-        return default;
+        return null;
+    }
+
+    public override T IsA<T>()
+    {
+        T result = base.IsA<T>();
+        if(result == null)
+            result = FindSubEffect<T>();
+        return result;
     }
 
 #if UNITY_EDITOR
